@@ -1,0 +1,33 @@
+.main_404 {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.error-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.error-image {
+    padding-top: 30% ;
+    max-width: 70%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.error-text {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.error-text h1 {
+    color: #000;
+    font-size: 2em;
+}
