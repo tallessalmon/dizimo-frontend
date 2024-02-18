@@ -31,7 +31,6 @@ const Dizimistas: React.FC = () => {
 
   const getData = () => {
     api.get("/tithers").then((result) => {
-      console.log(result);
       InitialData.push(result.data);
       const listNomesGrouped = _.groupBy(result.data, "fullName");
       const listNomes: IFilter[] = [];
@@ -45,6 +44,54 @@ const Dizimistas: React.FC = () => {
 
       setData(result.data);
     });
+  };
+
+  const expandedRowRender = (record: IDizimista) => {
+    const columnsTithe = [
+      {
+        title: "Mês Dizimo",
+        dataIndex: "date",
+        align: 'right',
+        width: '10%',
+        render: (value: string, record: any) => {
+          return moment(record.date).format("MM/YYYY");
+        },
+      },
+      {
+        title: "Valor",
+        dataIndex: "value",
+        align: 'right',
+        width: '10%',
+        render: (value: string, record: any) => {
+          return `R$ ${String(record.value).replace(".", ",")}`;
+        },
+      },
+      {
+        title: "Comunidade",
+        dataIndex: "community",
+        align: 'right',
+        width: '10%',
+      },
+      {
+        title: "Data da devolução",
+        dataIndex: "created_at",
+        align: 'right',
+        width: '10%',
+        render: (value: string, record: any) => {
+          return moment(record.date)
+            .add(1, "days")
+            .format("DD/MM/YYYY HH:mm:ss");
+        },
+      },
+    ];
+
+    return (
+      <Table
+        columns={columnsTithe}
+        dataSource={record.Tithe}
+        pagination={false}
+      />
+    );
   };
 
   useEffect(() => {
@@ -86,10 +133,10 @@ const Dizimistas: React.FC = () => {
         />
       ) : inputType === "selectCommunity" ? (
         <Select defaultValue={record.community}>
-          <Option value="Com. Matriz" />
-          <Option value="Com. Nossa Senhora Aparecida" />
-          <Option value="Com. Nossa Senhora da Conceição" />
-          <Option value="Com. São Sebastião" />
+          <Option value="Matriz" />
+          <Option value="Nossa Senhora Aparecida" />
+          <Option value="Nossa Senhora da Conceição" />
+          <Option value="São Sebastião" />
         </Select>
       ) : (
         <Input />
@@ -302,6 +349,7 @@ const Dizimistas: React.FC = () => {
               cell: EditableCell,
             },
           }}
+          rowKey={"id"}
           bordered
           dataSource={data}
           columns={mergedColumns}
@@ -309,6 +357,7 @@ const Dizimistas: React.FC = () => {
           pagination={{
             onChange: cancel,
           }}
+          expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
         />
       </Form>
 

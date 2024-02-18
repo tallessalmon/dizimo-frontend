@@ -29,7 +29,6 @@ const DetalhesForm = (props: IProps) => {
     };
 
   const onFinish = async (data: IForm) => {
-    console.log(data)
     const newUser = await api.post('/tithers', {
       fullName: data.fullName,
       community: data.community,
