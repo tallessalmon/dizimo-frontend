@@ -97,7 +97,7 @@ const Dizimo: React.FC = () => {
 
         <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
           <Button type="primary" htmlType="submit">
-            Submit
+            Gravar
           </Button>
         </Form.Item>
       </Form>

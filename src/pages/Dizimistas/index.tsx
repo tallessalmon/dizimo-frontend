@@ -30,7 +30,8 @@ const Dizimistas: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const getData = () => {
-    api.get("/tithers").then((result) => {
+    api.get("/tithers", {
+    }).then((result) => {
       InitialData.push(result.data);
       const listNomesGrouped = _.groupBy(result.data, "fullName");
       const listNomes: IFilter[] = [];
