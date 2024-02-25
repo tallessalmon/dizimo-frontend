@@ -1,4 +1,5 @@
-import { Button, Form, Input, InputNumber, Select, Switch, message } from "antd";
+import { Button, DatePicker, Form, Input, InputNumber, Select, Switch, message } from "antd";
+import locale from "antd/es/date-picker/locale/pt_BR";
 import { Option } from "antd/es/mentions";
 import api from "../../services/api";
 import { IForm, IProps } from "./interfaces";
@@ -83,7 +84,7 @@ const DetalhesForm = (props: IProps) => {
                 message: `Por favor insira a cidade de residência!`,
               },
             ]}>
-        <Input type="date"  style={{width: 200}}/>
+        <DatePicker locale={locale} format={'DD/MM/YYYY'}/>
       </Form.Item>
 
       <Form.Item label="Sexo" name="gender" rules={[

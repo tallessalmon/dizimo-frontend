@@ -13,7 +13,30 @@ export interface IDizimista {
     birthday: Date;
     gender: string;
     user_id: number;
-    Tithe?: any[]
+    Tithe?: ITithe[]
     created_at?: Date;
     updated_at?: Date;
+  }
+
+  export interface ITithe {
+    id: number,
+    date: string | Date;
+    value: number;
+    community: string;
+    created_at: string | Date;
+    updated_at: string | Date;
+    user?: IUser;
+  }
+
+  export interface IUser {
+    id: number;
+    profile: string;
+    password: string;
+    username: string;
+    name: string;
+    community: string;
+    phone: string;
+    email: string;
+    created_at: string;
+    updated_at: string;
   }

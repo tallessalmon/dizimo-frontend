@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  DatePicker,
   Form,
   Input,
   Popconfirm,
@@ -21,12 +22,14 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 import DetalhesModal from "../../components/Modal/DetalhesModal";
-import { IColaboradores } from "./interfaces";
+import { IUser } from "./interface";
+import moment from "moment-timezone";
+import dayjs from "dayjs";
 
 
 
-const Colaboradores: React.FC = () => {
-  const InitialData: IColaboradores[] = [];
+const Usuarios: React.FC = () => {
+  const InitialData: IUser[] = [];
   const [form] = Form.useForm();
   const [data, setData] = useState(InitialData);
   const [editingKey, setEditingKey] = useState("");
@@ -34,7 +37,7 @@ const Colaboradores: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const getData = () => {
-    api.get("/colaboradores").then((result) => {
+    api.get("/users").then((result) => {
       InitialData.push(result.data);
       const listNomesGrouped = _.groupBy(result.data, "nome");
       const listNomes: IFilter[] = [];
@@ -59,8 +62,8 @@ const Colaboradores: React.FC = () => {
     editing: boolean;
     dataIndex: string;
     title: string;
-    inputType: "boolean" | "text" | "selectSex" | "selectProfile";
-    record: IColaboradores;
+    inputType: "boolean" | "text" | "select" | "selectProfile" | "date";
+    record: IUser;
     index: number;
     children: React.ReactNode;
   }
@@ -82,16 +85,17 @@ const Colaboradores: React.FC = () => {
           defaultChecked={record.status}
           onChange={() => (record.status = !record.status)}
         />
-      ) : inputType === "selectSex" ? (
-        <Select defaultValue={record.sexo}>
-          <Option value="Masculino">Masculino</Option>
-          <Option value="Feminino">Feminino</Option>
+      ) : inputType === "select" ? (
+        <Select defaultValue={record.community}>
+          <Select.Option value="Matriz">Matriz</Select.Option >
+          <Select.Option  value="Nossa Senhora da Conceição">Nossa Senhora da Conceição</Select.Option >
+          <Select.Option  value="Nossa Senhora Aparecida">Nossa Senhora Aparecida</Select.Option >
+          <Select.Option  value="São Sebastião">São Sebastião</Select.Option >
         </Select>
       ) : inputType === "selectProfile" ? (
-        <Select defaultValue={record.perfil}>
-          <Option value="Perfil 1">Perfil 1</Option>
-          <Option value="Perfil 2">Perfil 2</Option>
-          <Option value="Perfil 3">Perfil 3</Option>
+        <Select defaultValue={record.community}>
+          <Select.Option value="administrador">Administrador</Select.Option >
+          <Select.Option  value="usuario">Usuário</Select.Option >
         </Select>
       ) : (
         <Input />
@@ -124,9 +128,9 @@ const Colaboradores: React.FC = () => {
     value?: string;
   }
 
-  const isEditing = (record: IColaboradores) => String(record.id) === editingKey;
+  const isEditing = (record: IUser) => String(record.id) === editingKey;
 
-  const edit = (record: Partial<IColaboradores> & { id: React.Key }) => {
+  const edit = (record: Partial<IUser> & { id: React.Key }) => {
     form.setFieldsValue({
       nome: "",
       cpf: "",
@@ -145,11 +149,11 @@ const Colaboradores: React.FC = () => {
 
   const save = async (key: React.Key) => {
     try {
-      const row = (await form.validateFields()) as IColaboradores;
+      const row = (await form.validateFields()) as IUser;
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.id);
       if (index > -1) {
-        const item: IColaboradores = newData[index];
+        const item: IUser = newData[index];
         newData.splice(index, 1, {
           ...item,
           ...row,
@@ -157,17 +161,12 @@ const Colaboradores: React.FC = () => {
         await setData(newData);
         await setEditingKey("");
         const NewIndex = newData.findIndex((item) => key === item.id);
-        const NewItem: IColaboradores = newData[NewIndex];
-        await api.patch(`/colaboradores/${NewItem.id}`, {
+        const NewItem: IUser = newData[NewIndex];
+        await api.patch(`/users/${NewItem.id}`, {
           ...NewItem,
-          nome: NewItem.nome.toUpperCase(),
-          cracha: Number(NewItem.cracha),
           created_at: undefined,
           updated_at: undefined,
         });
-        await api.post(`/colaboradores/send/${NewItem.id}`, {
-          body_index: NewIndex
-        })
       } else {
         newData.push(row);
         setData(newData);
@@ -181,45 +180,45 @@ const Colaboradores: React.FC = () => {
   const columns = [
     {
       title: "Nome",
-      dataIndex: "nome",
+      dataIndex: "name",
       width: "20%",
       editable: true,
-      sorter: (a: IColaboradores, b: IColaboradores) =>
-        a.nome.localeCompare(b.nome),
+      sorter: (a: IUser, b: IUser) =>
+        a.name.localeCompare(b.name),
       filters: filterNomes,
       filterSearch: true,
-      onFilter: (value: string, record: IColaboradores) => record.nome?.startsWith(value),
-    },
-    {
-      title: "CPF",
-      dataIndex: "cpf",
-      width: "10%",
-      editable: true,
+      onFilter: (value: string, record: IUser) => record.name?.startsWith(value),
     },
     {
       title: "Perfil",
-      dataIndex: "perfil",
+      dataIndex: "profile",
       width: "10%",
       editable: true,
     },
     {
-      title: "Sexo",
-      dataIndex: "sexo",
+      title: "Usuário",
+      dataIndex: "username",
       width: "10%",
       editable: true,
     },
     {
-      title: "Crachá",
-      dataIndex: "cracha",
-      type: Number,
+      title: "Senha",
+      dataIndex: "password",
+      width: "10%",
+      editable: true,
+    },
+    {
+      title: "Comunidade",
+      dataIndex: "community",
+      width: "10%",
+      editable: true,
+    },
+    {
+      title: "Ultima Atualização",
+      dataIndex: "updated_at",
       width: "15%",
-      editable: true,
-    },
-    {
-      title: "Empresa",
-      dataIndex: "empresa",
-      width: "10%",
-      editable: true,
+      editable: false,
+      render: (text: string) => text ? moment(text).format("DD/MM/YYYY HH:mm:ss") : ""
     },
     {
       title: "Status",
@@ -229,12 +228,12 @@ const Colaboradores: React.FC = () => {
       render: (text: boolean) => text ? <Tag color="success">ATIVO</Tag> : <Tag color="error">INATIVO</Tag>,
       filters: [{text:'ATIVO', value: true}, {text:'INATIVO', value: false}],
       filterSearch: true,
-      onFilter: (value: boolean, record: IColaboradores) => record.status === value
+      onFilter: (value: boolean, record: IUser) => record.status === value
     },
     {
       title: "Acões",
       dataIndex: "operation",
-      render: (_: any, record: IColaboradores) => {
+      render: (_: any, record: IUser) => {
         const editable = isEditing(record);
         return editable ? (
           <span>
@@ -277,15 +276,17 @@ const Colaboradores: React.FC = () => {
     }
     return {
       ...col,
-      onCell: (record: IColaboradores) => ({
+      onCell: (record: IUser) => ({
         record,
         inputType:
           col.dataIndex === "status"
             ? "boolean"
-            : col.dataIndex === "sexo"
-            ? "selectSex"
-            : col.dataIndex === "perfil"
+            : col.dataIndex === "profile"
             ? "selectProfile"
+            : col.dataIndex === "community"
+            ? "select"
+            : col.dataIndex === "updated_at"
+            ? "date"
             : "text",
         dataIndex: col.dataIndex,
         title: col.title,
@@ -295,22 +296,13 @@ const Colaboradores: React.FC = () => {
   });
   return (
     <>
-      <h2>COLABORADORES</h2>
+      <h2>Usuários</h2>
       <div
         style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}
       >
         <Button
-          title="Sincronizar"
-          type="default"
-          style={{ marginRight: 10 }}
-          onClick={() => api.post('/colaboradores/send')}
-        >
-          <SyncOutlined /> Sincronizar
-        </Button>
-        <Button
           title="Adicionar"
           type="primary"
-          style={{ backgroundColor: "#357e35" }}
           onClick={() => setModalOpen(true)}
         >
           <PlusCircleOutlined /> Adicionar
@@ -323,6 +315,7 @@ const Colaboradores: React.FC = () => {
               cell: EditableCell,
             },
           }}
+          rowKey={"id"}
           bordered
           dataSource={data}
           columns={mergedColumns}
@@ -343,4 +336,4 @@ const Colaboradores: React.FC = () => {
   );
 };
 
-export default Colaboradores;
+export default Usuarios;

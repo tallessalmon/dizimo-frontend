@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
         // token: {colorPrimary: "#B47D75"},
         components: {
           Layout: { siderBg: "#4A4947" },
-          Menu: { subMenuItemBg: "#7d774d", darkItemBg: "#4A4947" },
+          Menu: { subMenuItemBg: "#7d774d", darkItemBg: "#4A4947", darkSubMenuItemBg: "#302f2e" },
         },
       }}
     >
@@ -147,7 +147,7 @@ const Navbar: React.FC = () => {
                         {page}
                     </div>
                 </Content>
-                <Footer style={{ textAlign: 'center', margin: 0 }}>Created By Talles Salmon - 2023 - <strong>v 1.0.0</strong></Footer>
+                <Footer style={{ textAlign: 'center', margin: 0 }}>Created By Talles Salmon - 2024 - <strong>v 1.0.0</strong></Footer>
             </Layout>
       </Layout>
     </ConfigProvider>

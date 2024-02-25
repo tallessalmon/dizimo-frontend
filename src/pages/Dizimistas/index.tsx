@@ -91,6 +91,7 @@ const Dizimistas: React.FC = () => {
         columns={columnsTithe}
         dataSource={record.Tithe}
         pagination={false}
+        rowKey={"id"}
       />
     );
   };
@@ -104,7 +105,7 @@ const Dizimistas: React.FC = () => {
     editing: boolean;
     dataIndex: string;
     title: string;
-    inputType: "selectGender" | "text";
+    inputType: "selectGender" | "text" | "selectDate" | "selectCommunity";
     record: IDizimista;
     index: number;
     children: React.ReactNode;
@@ -127,17 +128,13 @@ const Dizimistas: React.FC = () => {
           <Option value="Feminino" />
         </Select>
       ) : inputType === "selectDate" ? (
-        <Input
-          type="date"
-          value={moment(record.birthday).format("DD/MM/YYYY")}
-          defaultValue={moment(record.birthday).format("DD/MM/YYYY")}
-        />
+        <Input type="date" value={moment(record.birthday).format('YYYY-MM-DD')} />
       ) : inputType === "selectCommunity" ? (
         <Select defaultValue={record.community}>
-          <Option value="Matriz" />
-          <Option value="Nossa Senhora Aparecida" />
-          <Option value="Nossa Senhora da Conceição" />
-          <Option value="São Sebastião" />
+          <Select.Option value="Matriz" children='Matriz' />
+          <Select.Option value="Nossa Senhora Aparecida" children='Nossa Senhora Aparacida'/>
+          <Select.Option value="Nossa Senhora da Conceição" children='Nossa Senhora da Conceição' />
+          <Select.Option value="São Sebastião" children='São Sebastião'/>
         </Select>
       ) : (
         <Input />
