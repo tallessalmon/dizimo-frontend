@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import locale from "antd/es/date-picker/locale/pt_BR";
 import { IDizimista } from "../Dizimistas/interfaces";
 import { Button, DatePicker, Form, Input, Select, message } from "antd";
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
+import moment from "moment-timezone";
+import dayjs from "dayjs";
 
 const Dizimo: React.FC = () => {
   const [tithers, setTithers] = useState<IDizimista[]>([]);
@@ -102,7 +105,7 @@ const Dizimo: React.FC = () => {
             { required: true, message: "Favor inserir o mês de referencia" },
           ]}
         >
-          <DatePicker picker="month" format="MM/YYYY" placeholder="" />
+          <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="" defaultValue={dayjs(moment().format('MM/YYYY'), 'MM/YYYY')} />
         </Form.Item>
 
         <Form.Item

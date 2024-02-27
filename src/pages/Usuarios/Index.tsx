@@ -21,10 +21,9 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from "@ant-design/icons";
-import DetalhesModal from "../../components/Modal/DetalhesModal";
 import { IUser } from "./interface";
 import moment from "moment-timezone";
-import dayjs from "dayjs";
+import DetalhesModal from "./components/Modal/DetalhesModal";
 
 
 
@@ -35,6 +34,7 @@ const Usuarios: React.FC = () => {
   const [editingKey, setEditingKey] = useState("");
   const [filterNomes, setFilterNomes] = useState<IFilter>();
   const [modalOpen, setModalOpen] = useState(false);
+  const [community, setCommunity] = useState<ICommunity[]>([])
 
   const getData = () => {
     api.get("/users").then((result) => {
@@ -51,6 +51,10 @@ const Usuarios: React.FC = () => {
 
       setData(result.data);
     });
+
+    api.get('/community').then((result) => {
+      setCommunity(result.data)
+    })
   };
 
   useEffect(() => {
@@ -86,16 +90,17 @@ const Usuarios: React.FC = () => {
           onChange={() => (record.status = !record.status)}
         />
       ) : inputType === "select" ? (
-        <Select defaultValue={record.community}>
-          <Select.Option value="Matriz">Matriz</Select.Option >
-          <Select.Option  value="Nossa Senhora da Conceição">Nossa Senhora da Conceição</Select.Option >
-          <Select.Option  value="Nossa Senhora Aparecida">Nossa Senhora Aparecida</Select.Option >
-          <Select.Option  value="São Sebastião">São Sebastião</Select.Option >
+        <Select value={record.community}>
+          {community.map((comm) => {
+            if(comm.status) {
+              return (<Select.Option key={comm.id} value={comm.name} children={comm.name} />)
+            }
+          })}
         </Select>
       ) : inputType === "selectProfile" ? (
-        <Select defaultValue={record.community}>
-          <Select.Option value="administrador">Administrador</Select.Option >
-          <Select.Option  value="usuario">Usuário</Select.Option >
+        <Select value={record.community}>
+          <Select.Option key="1" value="administrador" children="Administrador"/>
+          <Select.Option key="2" value="usuario" children="Usuário" />
         </Select>
       ) : (
         <Input />

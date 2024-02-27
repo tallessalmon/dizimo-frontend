@@ -16,6 +16,7 @@
     "apexcharts": "^3.46.0",
     "axios": "^1.6.2",
     "chart.js": "^4.4.1",
+    "cpf-cnpj-validator": "^1.0.3",
     "dayjs": "^1.11.10",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",

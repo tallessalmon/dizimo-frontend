@@ -28,6 +28,7 @@ const Dizimistas: React.FC = () => {
   const [editingKey, setEditingKey] = useState("");
   const [filterNames, setFilterNames] = useState<IFilter>();
   const [modalOpen, setModalOpen] = useState(false);
+  const [community, setCommunity] = useState<ICommunity[]>([])
 
   const getData = () => {
     api.get("/tithers", {
@@ -45,6 +46,10 @@ const Dizimistas: React.FC = () => {
 
       setData(result.data);
     });
+
+    api.get('/community').then((result) => {
+      setCommunity(result.data)
+    })
   };
 
   const expandedRowRender = (record: IDizimista) => {
@@ -123,18 +128,19 @@ const Dizimistas: React.FC = () => {
   }) => {
     const inputNode =
       inputType === "selectGender" ? (
-        <Select defaultValue={record.gender}>
-          <Option value="Masculino" />
-          <Option value="Feminino" />
+        <Select value={record.gender}>
+          <Select.Option value="Masculino" key='1' children="Masculino" />
+          <Select.Option value="Feminino" key='2' children="Feminino" />
         </Select>
       ) : inputType === "selectDate" ? (
         <Input type="date" value={moment(record.birthday).format('YYYY-MM-DD')} />
       ) : inputType === "selectCommunity" ? (
-        <Select defaultValue={record.community}>
-          <Select.Option value="Matriz" children='Matriz' />
-          <Select.Option value="Nossa Senhora Aparecida" children='Nossa Senhora Aparacida'/>
-          <Select.Option value="Nossa Senhora da Conceição" children='Nossa Senhora da Conceição' />
-          <Select.Option value="São Sebastião" children='São Sebastião'/>
+        <Select value={record.community}>
+          {community.map((comm) => {
+            if(comm.status) {
+              return (<Select.Option key={comm.id} value={comm.name} children={comm.name} />)
+            }
+          })}
         </Select>
       ) : (
         <Input />
@@ -203,6 +209,7 @@ const Dizimistas: React.FC = () => {
         await api.patch(`/tithers/${NewItem.id}`, {
           ...NewItem,
           id: undefined,
+          Tithe: undefined,
           created_at: undefined,
           updated_at: undefined,
         });
@@ -254,7 +261,7 @@ const Dizimistas: React.FC = () => {
       width: "15%",
       editable: true,
       render: (value: string, record: IDizimista) => {
-        return moment(record.birthday).add(1, "days").format("DD/MM/YYYY");
+        return moment(record.birthday).format("DD/MM/YYYY");
       },
     },
     {

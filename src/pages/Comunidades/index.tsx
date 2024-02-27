@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
-import { IDizimista } from "../Dizimistas/interfaces";
 import { Button, Form, Input, Switch, Table, TableProps, message } from "antd";
-import { getProfileLocalStorage } from "../../context/AuthProvider/util";
-
-interface ICommunity {
-  id: number;
-  name: string;
-  status?: boolean;
-}
 
 interface DataType {
   key: string;
@@ -57,7 +49,7 @@ const Comunidades: React.FC = () => {
     {
       title: "Ativar/Inativar",
       key: "status",
-      render: (_, record) => <Switch value={record.status} />,
+      render: (_, record) => <Switch defaultValue={record.status} onChange={() => api.patch(`community/${record.id}`, {status: !record.status})}/>,
     },
   ];
 
@@ -91,7 +83,7 @@ const Comunidades: React.FC = () => {
           </Form.Item>
         </Form>
       </div>
-      <Table columns={columns} dataSource={community} />
+      <Table rowKey={"id"} columns={columns} dataSource={community} />
     </>
   );
 };
