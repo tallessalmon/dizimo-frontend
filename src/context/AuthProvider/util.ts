@@ -32,7 +32,7 @@ export function getProfileLocalStorage () {
 
 export async function LoginRequest (username: string, password: string) {
     try {
-        const request = await axios.post(`http://dizimo-backend.us-east-1.elasticbeanstalk.com/auth/login`, {username, password})
+        const request = await axios.post(`https://dgu7wd759bdyj.cloudfront.net/auth/login`, {username, password})
         return request.data;
     } catch (error) {
         console.log(process.env.REACT_APP_BACKEND)
