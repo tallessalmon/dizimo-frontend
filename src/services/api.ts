@@ -3,7 +3,7 @@ import { getUserLocalStorage, setUserLocalStorage } from "../context/AuthProvide
 import { message } from "antd";
 const api = axios.create({
   baseURL:
-    ("http://localhost:3000"),
+    ("http://dizimo-backend.us-east-1.elasticbeanstalk.com"),
       headers: {
         "Authorization": `Bearer ${getUserLocalStorage()}`,
         "Cache-Control": "no-cache",
