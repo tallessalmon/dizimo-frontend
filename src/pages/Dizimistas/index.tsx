@@ -97,6 +97,7 @@ const Dizimistas: React.FC = () => {
         dataSource={record.Tithe}
         pagination={false}
         rowKey={"id"}
+        scroll={{ x: "100%" }}
       />
     );
   };
@@ -362,6 +363,7 @@ const Dizimistas: React.FC = () => {
           pagination={{
             onChange: cancel,
           }}
+          scroll={{ x: "100%" }}
           expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
         />
       </Form>

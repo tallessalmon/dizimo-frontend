@@ -327,6 +327,7 @@ const Usuarios: React.FC = () => {
           pagination={{
             onChange: cancel,
           }}
+          scroll={{ x: "100%" }}
         />
       </Form>
 

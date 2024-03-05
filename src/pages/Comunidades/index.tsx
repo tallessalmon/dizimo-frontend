@@ -83,7 +83,7 @@ const Comunidades: React.FC = () => {
           </Form.Item>
         </Form>
       </div>
-      <Table rowKey={"id"} columns={columns} dataSource={community} />
+      <Table rowKey={"id"} columns={columns} dataSource={community} scroll={{ x: "100%" }} />
     </>
   );
 };
