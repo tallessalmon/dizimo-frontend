@@ -3,8 +3,10 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthProvider/useAuth";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { useMediaQuery } from "react-responsive";
 
 export const Login = () => {
+  const isNotMobile = useMediaQuery({ query: "(min-width: 768px)" });
   const auth = useAuth();
   const history = useNavigate();
   const [form] = Form.useForm();
@@ -90,7 +92,13 @@ export const Login = () => {
           </Form.Item>
         </Form>
       </Col>
-      <img src="/santa-rosa.png" style={{float: 'right', margin: '0 -10px 10px 10px'}}/>
+      {isNotMobile && (
+        <img
+          src="/santa-rosa.png"
+          style={{ position: 'absolute', bottom: 80, right: 10 }}
+          alt="Imagem Santa Rosa"
+        />
+      )}
     </Row>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  DatePicker,
   Form,
   Input,
   Popconfirm,
@@ -13,17 +12,16 @@ import {
 } from "antd";
 import api from "../../services/api";
 import _ from "lodash";
-import { Option } from "antd/es/mentions";
 import {
   CloseCircleOutlined,
   EditOutlined,
   PlusCircleOutlined,
   SaveOutlined,
-  SyncOutlined,
 } from "@ant-design/icons";
 import { IUser } from "./interface";
 import moment from "moment-timezone";
 import DetalhesModal from "./components/Modal/DetalhesModal";
+import { ICommunity } from "../Comunidades/interface";
 
 
 
@@ -211,6 +209,7 @@ const Usuarios: React.FC = () => {
       dataIndex: "password",
       width: "10%",
       editable: true,
+      render: () => "*********",
     },
     {
       title: "Comunidade",
