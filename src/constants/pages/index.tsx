@@ -24,7 +24,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Home />,
-    allow: ["admin", "administracao", "usuario"],
+    allow: ["admin", "administrador", "usuario"],
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Dizimo />,
-    allow: ["admin", "administracao", "usuario"],
+    allow: ["admin", "administrador", "usuario"],
   },
   {
     id: 3,
@@ -44,7 +44,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Dizimistas />,
-    allow: ["admin", "administracao", "usuario"],
+    allow: ["admin", "administrador", "usuario"],
   },
   {
     id: 4,
@@ -71,7 +71,7 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page: <Comunidades />,
-        allow: ["admin", "administracao"],
+        allow: ["admin", "administrador"],
       },
       {
         id: 5.2,
@@ -81,10 +81,10 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page:<Usuarios />,
-        allow: ["admin", "administracao"],
+        allow: ["admin", "administrador"],
       },
     ],
     page: <></>,
-    allow: ["admin", "administracao"],
+    allow: ["admin", "administrador"],
   },
 ];

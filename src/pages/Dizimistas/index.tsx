@@ -271,7 +271,9 @@ const Dizimistas: React.FC = () => {
       type: Date,
       width: "15%",
       editable: true,
-    },
+      render: (value: string, record: IDizimista) =>  {
+        return <a href={`https://wa.me/55${record.phone}` }>{record.phone}</a>
+      }    },
     {
       title: "Acões",
       dataIndex: "operation",
