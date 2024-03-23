@@ -76,7 +76,19 @@ const Dizimistas: React.FC = () => {
         title: "Forma de Devolucao",
         dataIndex: "mode_pay",
         align: 'right',
-        width: '10%'
+        width: '10%',
+        render: (value: string, record: any) => {
+          return `${String(record.mode_pay).toUpperCase() === 'NULL' ? '' : String(record.mode_pay).toUpperCase()}`
+        },
+      },
+      {
+        title: "Banco",
+        dataIndex: "bank",
+        align: 'right',
+        width: '10%',
+        render: (value: string, record: any) => {
+          return `${String(record.bank).toUpperCase() === 'NULL' ? '' : String(record.bank).toUpperCase()}`
+        },
       },
       {
         title: "Comunidade",
