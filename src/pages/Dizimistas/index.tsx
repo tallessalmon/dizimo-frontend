@@ -73,6 +73,12 @@ const Dizimistas: React.FC = () => {
         },
       },
       {
+        title: "Forma de Devolucao",
+        dataIndex: "mode_pay",
+        align: 'right',
+        width: '10%'
+      },
+      {
         title: "Comunidade",
         dataIndex: "community",
         align: 'right',
@@ -84,7 +90,7 @@ const Dizimistas: React.FC = () => {
         align: 'right',
         width: '10%',
         render: (value: string, record: any) => {
-          return moment(record.date)
+          return moment(record.created_at)
             .add(1, "days")
             .format("DD/MM/YYYY HH:mm:ss");
         },
@@ -272,7 +278,7 @@ const Dizimistas: React.FC = () => {
       width: "15%",
       editable: true,
       render: (value: string, record: IDizimista) =>  {
-        return <a href={`https://wa.me/55${record.phone}` }>{record.phone}</a>
+        return <a target="_blank" href={`https://wa.me/55${record.phone}` }>{record.phone}</a>
       }    },
     {
       title: "Acões",

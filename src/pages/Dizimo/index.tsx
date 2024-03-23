@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 
 const Dizimo: React.FC = () => {
   const [tithers, setTithers] = useState<IDizimista[]>([]);
+  const [payment, setPayment] = useState<String>('')
   const [form] = Form.useForm();
 
   const getTithers = () => {
@@ -105,7 +106,7 @@ const Dizimo: React.FC = () => {
             { required: true, message: "Favor inserir o mês de referencia" },
           ]}
         >
-          <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="" defaultValue={dayjs(moment().format('MM/YYYY'), 'MM/YYYY')} />
+          <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder=""/>
         </Form.Item>
 
         <Form.Item
@@ -118,6 +119,38 @@ const Dizimo: React.FC = () => {
         >
           <Input prefix="R$" style={{ width: "100%" }} />
         </Form.Item>
+
+        <Form.Item
+          label="Forma de Devolucão"
+          name="mode_pay"
+          rules={[
+            { required: true, message: "Favor inserir a forma da devolucão" },
+            { validateTrigger: "" },
+          ]}
+        >
+          <Select style={{ width: "100%" }} onChange={(e) => setPayment(e)}>
+            <Select.Option  children='PIX' value='pix'/>
+            <Select.Option  children='Dinheiro' value='dinheiro'/>
+          </Select>
+        </Form.Item>
+
+        {
+          payment === 'pix' ? 
+          <Form.Item
+          label="Banco"
+          name="bank"
+          rules={[
+            { required: true, message: "Favor informar o banco que foi feito o PIX" },
+            { validateTrigger: "" },
+          ]}
+        >
+          <Select style={{ width: "100%" }}>
+            <Select.Option  children='CAIXA' value='caixa'/>
+            <Select.Option  children='BANCO DO BRASIL' value='banco do brasil'/>
+          </Select>
+        </Form.Item> : <></>
+        }
+
 
         <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
           <Button type="primary" htmlType="submit">
