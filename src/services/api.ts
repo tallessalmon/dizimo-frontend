@@ -3,7 +3,7 @@ import { getUserLocalStorage, setUserLocalStorage } from "../context/AuthProvide
 import { message } from "antd";
 const api = axios.create({
   baseURL:
-    ("https://d1fxb9lkb72ea1.cloudfront.net"),
+    (import.meta.env.VITE_BACKEND),
       headers: {
         "Authorization": `Bearer ${getUserLocalStorage()}`,
         "Cache-Control": "no-cache",

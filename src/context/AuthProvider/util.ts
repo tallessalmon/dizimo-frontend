@@ -32,7 +32,7 @@ export function getProfileLocalStorage () {
 
 export async function LoginRequest (username: string, password: string) {
     try {
-        const request = await axios.post(`https://d1fxb9lkb72ea1.cloudfront.net/auth/login`, {username, password})
+        const request = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/login`, {username, password})
         return request.data;
     } catch (error) {
         console.log(process.env.REACT_APP_BACKEND)
