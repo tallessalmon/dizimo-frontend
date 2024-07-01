@@ -1,25 +1,31 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
+  DatePicker,
+  Drawer,
   Form,
   Input,
   Popconfirm,
   Select,
   Table,
   Typography,
+  message,
 } from "antd";
 import api from "../../services/api";
 import _ from "lodash";
-import { Option } from "antd/es/mentions";
 import {
   CloseCircleOutlined,
   EditOutlined,
   PlusCircleOutlined,
   SaveOutlined,
+  HeartOutlined
 } from "@ant-design/icons";
 import DetalhesModal from "../../components/Modal/DetalhesModal";
 import { IDizimista } from "./interfaces";
 import moment from "moment-timezone";
+import { ICommunity } from "../Comunidades/interface";
+import locale from "antd/es/date-picker/locale/pt_BR";
+import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 
 const Dizimistas: React.FC = () => {
   const InitialData: IDizimista[] = [];
@@ -29,6 +35,39 @@ const Dizimistas: React.FC = () => {
   const [filterNames, setFilterNames] = useState<IFilter>();
   const [modalOpen, setModalOpen] = useState(false);
   const [community, setCommunity] = useState<ICommunity[]>([])
+  const [open, setOpen] = useState(false);
+  const [tither, setTither] = useState<IDizimista>();
+  const [payment, setPayment] = useState<String>('')
+
+  const showDrawer = (selectedTiither: IDizimista) => {
+    setTither(selectedTiither)
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const onFinish = async (data: any) => {
+    data.value = Number(data.value.replace(",", "."));
+    const user: any = getProfileLocalStorage();
+    const newUser = await api.post("/tithe", {
+      ...data,
+      community: user.community,
+      user_id: user.sub,
+      tither_id: tither?.id
+    });
+
+    if (newUser.status === 201) {
+      message.success("Dizimo cadastrado com sucesso!!\n Deus abençoe sua devolução 🙏🏼❤️", 5);
+      form.resetFields();
+      onClose();
+    } else {
+      message.error(
+        "Ops!! Não consegui cadastrar o dízimo, por favor confira as informações ou tente mais tarde.."
+      );
+    }
+  };
 
   const getData = () => {
     api.get("/tithers", {
@@ -156,7 +195,7 @@ const Dizimistas: React.FC = () => {
       ) : inputType === "selectCommunity" ? (
         <Select value={record.community}>
           {community.map((comm) => {
-            if(comm.status) {
+            if (comm.status) {
               return (<Select.Option key={comm.id} value={comm.name} children={comm.name} />)
             }
           })}
@@ -289,9 +328,10 @@ const Dizimistas: React.FC = () => {
       type: Date,
       width: "15%",
       editable: true,
-      render: (value: string, record: IDizimista) =>  {
-        return <a target="_blank" href={`https://wa.me/55${record.phone}` }>{record.phone}</a>
-      }    },
+      render: (value: string, record: IDizimista) => {
+        return <a target="_blank" href={`https://wa.me/55${record.phone}`}>{record.phone}</a>
+      }
+    },
     {
       title: "Acões",
       dataIndex: "operation",
@@ -319,14 +359,19 @@ const Dizimistas: React.FC = () => {
             </Popconfirm>
           </span>
         ) : (
-          <Typography.Link
-            disabled={editingKey !== ""}
-            onClick={() => edit(record)}
-          >
-            <Button type="default">
-              <EditOutlined /> Editar
+          <>
+            <Button type="primary" onClick={() => showDrawer(record)}>
+              <HeartOutlined /> Lançar Dízimo
             </Button>
-          </Typography.Link>
+            <Typography.Link
+              disabled={editingKey !== ""}
+              onClick={() => edit(record)}
+            >
+              <Button type="default">
+                <EditOutlined /> Editar
+              </Button >
+            </Typography.Link>
+          </>
         );
       },
     },
@@ -344,10 +389,10 @@ const Dizimistas: React.FC = () => {
           col.dataIndex === "gender"
             ? "selectGender"
             : col.dataIndex === "birthday"
-            ? "selectDate"
-            : col.dataIndex === "community"
-            ? "selectCommunity"
-            : "text",
+              ? "selectDate"
+              : col.dataIndex === "community"
+                ? "selectCommunity"
+                : "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -394,6 +439,73 @@ const Dizimistas: React.FC = () => {
         width={1000}
         getData={() => getData()}
       />
+      <Drawer title={tither?.fullName} onClose={onClose} open={open} destroyOnClose>
+        <Form
+          // {...formItemLayout}
+          style={{ maxWidth: 600 }}
+          onFinish={onFinish}
+          form={form}
+        >
+          <Form.Item
+            label="Mes de Referência"
+            name="date"
+            rules={[
+              { required: true, message: "Favor inserir o mês de referencia" },
+            ]}
+          >
+            <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="" />
+          </Form.Item>
+
+          <Form.Item
+            label="Valor"
+            name="value"
+            rules={[
+              { required: true, message: "Favor inserir o valor do dizimo" },
+              { validateTrigger: "" },
+            ]}
+          >
+            <Input prefix="R$" style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="Forma de Devolucão"
+            name="mode_pay"
+            rules={[
+              { required: true, message: "Favor inserir a forma da devolucão" },
+              { validateTrigger: "" },
+            ]}
+          >
+            <Select style={{ width: "100%" }} onChange={(e) => setPayment(e)}>
+              <Select.Option children='PIX' value='pix' />
+              <Select.Option children='Dinheiro' value='dinheiro' />
+            </Select>
+          </Form.Item>
+
+          {
+            payment === 'pix' ?
+              <Form.Item
+                label="Banco"
+                name="bank"
+                rules={[
+                  { required: true, message: "Favor informar o banco que foi feito o PIX" },
+                  { validateTrigger: "" },
+                ]}
+              >
+                <Select style={{ width: "100%" }}>
+                  <Select.Option children='CAIXA' value='caixa' />
+                  <Select.Option children='BANCO DO BRASIL' value='banco do brasil' />
+                </Select>
+              </Form.Item> : <></>
+          }
+
+
+          <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
+            <Button type="primary" htmlType="submit">
+              Gravar
+            </Button>
+          </Form.Item>
+        </Form>
+      </Drawer>
     </>
   );
 };
