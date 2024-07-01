@@ -10,6 +10,7 @@ import {
   Table,
   Typography,
   message,
+  notification,
 } from "antd";
 import api from "../../services/api";
 import _ from "lodash";
@@ -38,6 +39,9 @@ const Dizimistas: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [tither, setTither] = useState<IDizimista>();
   const [payment, setPayment] = useState<String>('')
+  const [alert, contextHolder] = notification.useNotification();
+
+  type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
   const showDrawer = (selectedTiither: IDizimista) => {
     setTither(selectedTiither)
@@ -46,6 +50,7 @@ const Dizimistas: React.FC = () => {
 
   const onClose = () => {
     setOpen(false);
+    form.resetFields();
   };
 
   const onFinish = async (data: any) => {
@@ -59,14 +64,21 @@ const Dizimistas: React.FC = () => {
     });
 
     if (newUser.status === 201) {
-      message.success("Dizimo cadastrado com sucesso!!\n Deus abençoe sua devolução 🙏🏼❤️", 5);
+      openNotification('success', 'Dizimo lançado com sucesso', 'Dizimo cadastrado com sucesso!!\n Deus abençoe sua devolução 🙏🏼❤️')
       form.resetFields();
       onClose();
+      getData();
     } else {
-      message.error(
-        "Ops!! Não consegui cadastrar o dízimo, por favor confira as informações ou tente mais tarde.."
-      );
+      openNotification('error', 'Houve um erro ao tentar lançar', 'Ops!! Não consegui cadastrar o dízimo, \npor favor confira as informações ou tente mais tarde..')
     }
+  };
+
+  const openNotification = (type: NotificationType, title: string, message: string ) => {
+    alert[type]({
+      message: title,
+      description:
+        message,
+    });
   };
 
   const getData = () => {
@@ -401,6 +413,7 @@ const Dizimistas: React.FC = () => {
   });
   return (
     <>
+       {contextHolder}
       <h2>DIZIMISTAS</h2>
       <div
         style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}
