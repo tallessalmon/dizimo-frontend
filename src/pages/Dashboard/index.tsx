@@ -7,75 +7,58 @@ import "moment/locale/pt-br";
 import { Radio } from "antd";
 
 const Dashboards: React.FC = () => {
-  const InitialData: ITithe[] = [];
-  const [categories, setCategories] = useState([""]);
-  const [sumMonths, setSumMonths] = useState([0]);
-  const [categoriesCommunity, setCategoriesCommunity] = useState([""]);
-  const [sumCommunity, setSumCommunity] = useState([0]);
-  const [typeDash, setTypeDash] = useState("month");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [seriesData, setSeriesData] = useState<any[]>([]);
+  const [typeDash, setTypeDash] = useState<"month" | "community">("month");
 
-  const getData = () => {
-    api.get("/tithe", {}).then((result) => {
-      InitialData.push(result.data);
+  useEffect(() => {
+    api.get<ITithe[]>("/tithe").then((result) => {
+      const data = result.data;
 
-      const groupedByMonth = result.data.reduce((acc, e) => {
-        const month = moment(e.date).locale("pt-br").format("MM/YYYY");
-        acc[month] = (acc[month] || 0) + e.value;
-        return acc;
-      }, {});
+      if (typeDash === "month") {
+        const groupedData = data.reduce((acc, e) => {
+          const month = moment(e.date).locale("pt-br").format("MM/YYYY");
+          acc[month] = (acc[month] || 0) + e.value;
+          return acc;
+        }, {} as Record<string, number>);
 
-      const groupedByCommunity = result.data.reduce((acc, e) => {
-        const community = e.community;
-        acc[community] = (acc[community] || 0) + e.value;
-        return acc;
-      }, {});
+        const newCategories = Object.keys(groupedData);
+        const newData = Object.values(groupedData).map(v => parseFloat(v.toFixed(2)));
 
-      const monthlySummaries = Object.keys(groupedByMonth).map(month => ({
-        month,
-        sum: parseFloat(groupedByMonth[month].toFixed(2))
-      }));
-      
+        setCategories(newCategories);
+        setSeriesData([{
+          name: "Total do Mês",
+          data: newData
+        }]);
+      } else {
+        const groupedData = data.reduce((acc, e) => {
+          const month = moment(e.date).locale("pt-br").format("MM/YYYY");
+          if (!acc[e.community]) {
+            acc[e.community] = {};
+          }
+          acc[e.community][month] = (acc[e.community][month] || 0) + e.value;
+          return acc;
+        }, {} as Record<string, Record<string, number>>);
 
-      const summaries = Object.keys(groupedByCommunity).map((community) => ({
-        community,
-        sum: parseFloat(groupedByCommunity[community].toFixed(2)),
-      }));
+        const allMonths = [...new Set(data.map(e => moment(e.date).locale("pt-br").format("MM/YYYY")))];
+        setCategories(allMonths);
 
-      setCategoriesCommunity(
-        summaries.map((e) => {
-          return e.community;
-        })
-      );
-      setSumCommunity(
-        summaries.map((e) => {
-          return e.sum;
-        })
-      );
+        const newSeries = Object.keys(groupedData).map(community => ({
+          name: community,
+          data: allMonths.map(month => groupedData[community][month] || 0)
+        }));
 
-      setCategories(
-        monthlySummaries.map((e) => {
-          return e.month
-        })
-      );
-
-      setSumMonths(
-        monthlySummaries.map((e) => {
-          return e.sum;
-        })
-      );
+        setSeriesData(newSeries);
+      }
     });
-  };
+  }, [typeDash]);
 
   const options = {
     xaxis: {
-      categories: typeDash === "month" ? categories : categoriesCommunity,
+      categories: categories,
       position: "top",
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
       crosshairs: {
         fill: {
           type: "gradient",
@@ -88,69 +71,38 @@ const Dashboards: React.FC = () => {
           },
         },
       },
-      tooltip: {
-        enabled: true,
-      },
+      tooltip: { enabled: true },
     },
-    colors: ["#B47D75"],
+    colors: ["#B47D75", "#61C0BF", "#F2C94C", "#277DA1", "#577590"],
     plotOptions: {
       bar: {
         borderRadius: 10,
-        dataLabels: {
-          position: "top", // top, center, bottom
-        },
+        dataLabels: { position: "top" },
       },
     },
     dataLabels: {
       enabled: true,
-      formatter: function (val) {
-        return "R$ " + val;
-      },
+      formatter: (val) => "R$ " + val,
       offsetY: -20,
-      style: {
-        fontSize: "12px",
-        colors: ["#304758"],
-      },
+      style: { fontSize: "12px", colors: ["#304758"] },
     },
     yaxis: {
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        show: false,
-        formatter: function (val) {
-          return "R$ " + val;
-        },
-      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      labels: { show: false },
     },
   };
-
-  const series = [
-    {
-      name: "Total do mês",
-      data: typeDash === "month" ? sumMonths : sumCommunity,
-    },
-  ];
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   return (
     <>
       <h2>Dashboards</h2>
-      <div
-        style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}
-      >
-        <Radio.Group defaultValue={typeDash} onChange={(e) => setTypeDash(e.target.value)}> 
-          <Radio value='month' children="Mês"/>   
-          <Radio value='community' children="Comunidade"/>   
+      <div style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}>
+        <Radio.Group defaultValue={typeDash} onChange={(e) => setTypeDash(e.target.value)}>
+          <Radio value="month">Mês</Radio>
+          <Radio value="community">Comunidade</Radio>
         </Radio.Group>
       </div>
-      <Chart options={options} series={series} type="bar" height={320} />
+      <Chart options={options} series={seriesData} type="bar" height={320} />
     </>
   );
 };
