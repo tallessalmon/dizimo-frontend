@@ -6,14 +6,13 @@ import {
   Form,
   Input,
   Popconfirm,
+  QRCode,
   Select,
   Table,
   Typography,
   message,
   notification,
 } from "antd";
-import api from "../../services/api";
-import _ from "lodash";
 import {
   CloseCircleOutlined,
   EditOutlined,
@@ -21,30 +20,39 @@ import {
   SaveOutlined,
   HeartOutlined
 } from "@ant-design/icons";
-import DetalhesModal from "../../components/Modal/DetalhesModal";
-import { IDizimista } from "./interfaces";
 import moment from "moment-timezone";
-import { ICommunity } from "../Comunidades/interface";
 import locale from "antd/es/date-picker/locale/pt_BR";
+import _ from "lodash";
+
+import api from "../../services/api";
+import DetalhesModal from "../../components/Modal/DetalhesModal";
+import { IDizimista, ITithe } from "./interfaces";
+import { ICommunity } from "../Comunidades/interface";
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
+import { IBanks } from "../Bancos/interface";
+import generatePix from "../../components/QRCodePix";
+import { ColumnType } from "antd/es/table";
 
 const Dizimistas: React.FC = () => {
-  const InitialData: IDizimista[] = [];
   const [form] = Form.useForm();
-  const [data, setData] = useState(InitialData);
-  const [editingKey, setEditingKey] = useState("");
-  const [filterNames, setFilterNames] = useState<IFilter>();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [community, setCommunity] = useState<ICommunity[]>([])
-  const [open, setOpen] = useState(false);
-  const [tither, setTither] = useState<IDizimista>();
-  const [payment, setPayment] = useState<String>('')
+  const [data, setData] = useState<IDizimista[]>([]);
+  const [editingKey, setEditingKey] = useState<string>("");
+  const [filterNames, setFilterNames] = useState<IFilter[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [community, setCommunity] = useState<ICommunity[]>([]);
+  const [banks, setBanks] = useState<IBanks[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [tither, setTither] = useState<IDizimista | null>(null);
+  const [payment, setPayment] = useState<string>("");
+  const [value, setValue] = useState<any>(0);
+  const [bank, setBank] = useState<IBanks>();
   const [alert, contextHolder] = notification.useNotification();
+  const [pixImageSrc, setPixImageSrc] = useState<string>("");
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
-  const showDrawer = (selectedTiither: IDizimista) => {
-    setTither(selectedTiither)
+  const showDrawer = (selectedTither: IDizimista) => {
+    setTither(selectedTither);
     setOpen(true);
   };
 
@@ -53,58 +61,63 @@ const Dizimistas: React.FC = () => {
     form.resetFields();
   };
 
-  const onFinish = async (data: any) => {
-    data.value = Number(data.value.replace(",", "."));
-    const user: any = getProfileLocalStorage();
-    const newUser = await api.post("/tithe", {
-      ...data,
-      community: user.community,
-      user_id: user.sub,
-      tither_id: tither?.id
-    });
+  const onFinish = async (formData: any) => {
+    try {
+      formData.value = Number(formData.value.replace(",", "."));
+      const user: any = getProfileLocalStorage();
+      const newUser = await api.post("/tithe", {
+        ...formData,
+        community: user.community,
+        user_id: user.sub,
+        tither_id: tither?.id,
+        bank_id: +formData.bank_id
+      });
 
-    if (newUser.status === 201) {
-      openNotification('success', 'Dizimo lançado com sucesso', 'Dizimo cadastrado com sucesso!!\n Deus abençoe sua devolução 🙏🏼❤️')
-      form.resetFields();
-      onClose();
-      getData();
-    } else {
-      openNotification('error', 'Houve um erro ao tentar lançar', 'Ops!! Não consegui cadastrar o dízimo, \npor favor confira as informações ou tente mais tarde..')
+      if (newUser.status === 201) {
+        openNotification('success', 'Dízimo lançado com sucesso', 'Dízimo cadastrado com sucesso!!\nDeus abençoe sua devolução 🙏🏼❤️');
+        form.resetFields();
+        onClose();
+        getData();
+      } else {
+        openNotification('error', 'Erro ao lançar dízimo', 'Ops!! Não consegui cadastrar o dízimo, \npor favor confira as informações ou tente mais tarde.');
+      }
+    } catch (error) {
+      openNotification('error', 'Erro ao lançar dízimo', 'Ops!! Algo deu errado, por favor tente novamente.');
     }
   };
 
-  const openNotification = (type: NotificationType, title: string, message: string ) => {
+  const openNotification = (type: NotificationType, title: string, message: string) => {
     alert[type]({
       message: title,
-      description:
-        message,
+      description: message,
     });
   };
 
-  const getData = () => {
-    api.get("/tithers", {
-    }).then((result) => {
-      InitialData.push(result.data);
-      const listNomesGrouped = _.groupBy(result.data, "fullName");
-      const listNomes: IFilter[] = [];
-      for (const name in listNomesGrouped || []) {
-        listNomes.push({
-          text: name,
-          value: name,
-        });
-      }
-      setFilterNames(listNomes as any);
+  const getData = async () => {
+    try {
+      const tithersResponse = await api.get("/tithers");
+      const communitiesResponse = await api.get('/community');
+      const banksResponse = await api.get("/banks");
 
-      setData(result.data);
-    });
+      const tithersData = tithersResponse.data;
+      setData(tithersData);
 
-    api.get('/community').then((result) => {
-      setCommunity(result.data)
-    })
+      const listNomesGrouped = _.groupBy(tithersData, "fullName");
+      const listNomes: IFilter[] = Object.keys(listNomesGrouped).map(name => ({
+        text: name,
+        value: name,
+      }));
+      setFilterNames(listNomes);
+
+      setCommunity(communitiesResponse.data);
+      setBanks(banksResponse.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+    }
   };
 
   const expandedRowRender = (record: IDizimista) => {
-    const columnsTithe = [
+    const columnsTithe: ColumnType<ITithe>[] = [
       {
         title: "Mês Dizimo",
         dataIndex: "date",
@@ -134,11 +147,12 @@ const Dizimistas: React.FC = () => {
       },
       {
         title: "Banco",
-        dataIndex: "bank",
+        dataIndex: "bank_id",
         align: 'right',
         width: '10%',
         render: (value: string, record: any) => {
-          return `${String(record.bank).toUpperCase() === 'NULL' ? '' : String(record.bank).toUpperCase()}`
+          return `${String(record.bank_id).toUpperCase() === 'NULL' ? '' :
+            banks.find(bank => bank.id === record.bank_id)?.bank_name.toUpperCase()}`
         },
       },
       {
@@ -175,6 +189,18 @@ const Dizimistas: React.FC = () => {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (bank && +value != 0 && form.isFieldsTouched(['bank_id', 'value', 'date'])) {
+      form
+        .validateFields()
+        .then((allValues) => {
+          if (bank) {
+            setPixImageSrc(generatePix(bank, allValues.value, allValues.date.$d))
+          }
+        })
+    }
+  }, [bank, value]);
 
   interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
     editing: boolean;
@@ -413,7 +439,7 @@ const Dizimistas: React.FC = () => {
   });
   return (
     <>
-       {contextHolder}
+      {contextHolder}
       <h2>DIZIMISTAS</h2>
       <div
         style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}
@@ -477,7 +503,7 @@ const Dizimistas: React.FC = () => {
               { validateTrigger: "" },
             ]}
           >
-            <Input prefix="R$" style={{ width: "100%" }} />
+            <Input prefix="R$" style={{ width: "100%" }} onChange={(e) => setValue(e.target.value)} />
           </Form.Item>
 
           <Form.Item
@@ -496,20 +522,49 @@ const Dizimistas: React.FC = () => {
 
           {
             payment === 'pix' ?
-              <Form.Item
-                label="Banco"
-                name="bank"
-                rules={[
-                  { required: true, message: "Favor informar o banco que foi feito o PIX" },
-                  { validateTrigger: "" },
-                ]}
-              >
-                <Select style={{ width: "100%" }}>
-                  <Select.Option children='CAIXA' value='caixa' />
-                  <Select.Option children='BANCO DO BRASIL' value='banco do brasil' />
-                </Select>
-              </Form.Item> : <></>
+              <>
+                <Form.Item
+                  label="Banco"
+                  name="bank_id"
+                  rules={[
+                    { required: true, message: "Favor informar o banco que foi feito o PIX" },
+                    { validateTrigger: "" },
+                  ]}
+                >
+                  <Select style={{ width: "100%" }} onChange={(e) => banks.map((bk) => { if (bk.id == e) { setBank(bk) } })}>
+                    {banks.map((bank) => {
+                      if (bank.status) {
+                        return (
+                          <Select.Option
+                            key={String(bank.id)}
+                            value={String(bank.id)}
+                            children={bank.bank_name}
+                          />
+                        );
+                      };
+                    })}
+                  </Select>
+                </Form.Item>
+              </> : <></>
           }
+          {
+            value !== 0  && bank ?
+            <Form.Item>
+                  <QRCode
+                    type='canvas'
+                    value={pixImageSrc || ""}
+                    bgColor="#fff"
+                    style={{ marginBottom: 16 }}
+                    icon="/logo.jpg"
+                  />
+                </Form.Item>
+                : <></>
+          }
+
+          {/* {
+            bank != null && value != 0
+              ? <img src={generatePix(bank, value)} /> : <></>
+          } */}
 
 
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>

@@ -5,6 +5,7 @@ import {
   BarChartOutlined,
   SettingOutlined,
   TeamOutlined,
+  BankOutlined,
 } from "@ant-design/icons";
 import Home from "../../pages/Home";
 import Dizimistas from "../../pages/Dizimistas";
@@ -14,6 +15,7 @@ import Dizimo from "../../pages/Dizimo";
 import Dashboards from "../../pages/Dashboard";
 import Usuarios from "../../pages/Usuarios/Index";
 import Comunidades from "../../pages/Comunidades";
+import Bancos from "../../pages/Bancos";
 
 export const Pages: IPages[] = [
   {
@@ -75,6 +77,16 @@ export const Pages: IPages[] = [
       },
       {
         id: 5.2,
+        icon: <BankOutlined />,
+        path: "bancos",
+        title: "Bancos",
+        hasSubMenu: false,
+        subMenu: [],
+        page:<Bancos />,
+        allow: ["admin", "administrador"],
+      },
+      {
+        id: 5.3,
         icon: <TeamOutlined />,
         path: "usuarios",
         title: "Usuários",

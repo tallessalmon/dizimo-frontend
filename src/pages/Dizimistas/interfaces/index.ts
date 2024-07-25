@@ -24,7 +24,7 @@ export interface IDizimista {
     value: number;
     community: string;
     mode_pay: string;
-    bank: string;
+    bank_id: number;
     created_at: string | Date;
     updated_at: string | Date;
     user?: IUser;

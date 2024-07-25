@@ -6,15 +6,21 @@ import { Button, DatePicker, Form, Input, Select, message } from "antd";
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 import moment from "moment-timezone";
 import dayjs from "dayjs";
+import { IBanks } from "../Bancos/interface";
 
 const Dizimo: React.FC = () => {
   const [tithers, setTithers] = useState<IDizimista[]>([]);
+  const [banks, setBanks] = useState<IBanks[]>([]);
   const [payment, setPayment] = useState<String>('')
   const [form] = Form.useForm();
 
   const getTithers = () => {
     api.get("/tithers").then((result) => {
       setTithers(result.data);
+    });
+
+    api.get("/banks").then((result) => {
+      setBanks(result.data);
     });
   };
 
@@ -138,15 +144,24 @@ const Dizimo: React.FC = () => {
           payment === 'pix' ? 
           <Form.Item
           label="Banco"
-          name="bank"
+          name="bank_id"
           rules={[
             { required: true, message: "Favor informar o banco que foi feito o PIX" },
             { validateTrigger: "" },
           ]}
         >
           <Select style={{ width: "100%" }}>
-            <Select.Option  children='CAIXA' value='caixa'/>
-            <Select.Option  children='BANCO DO BRASIL' value='banco do brasil'/>
+          {banks.map((bank) => {
+              return (
+                <Select.Option
+                  key={bank.id}
+                  value={bank.id}
+                  children={bank.bank_name}
+                />
+              );
+            })}
+            {/* <Select.Option  children='CAIXA' value='caixa'/>
+            <Select.Option  children='BANCO DO BRASIL' value='banco do brasil'/> */}
           </Select>
         </Form.Item> : <></>
         }

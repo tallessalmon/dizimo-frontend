@@ -22,6 +22,7 @@
     "lodash": "^4.17.21",
     "moment-timezone": "^0.5.43",
     "primereact": "^10.5.1",
+    "qrcode-pix": "^5.0.0",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",
