@@ -70,7 +70,7 @@ const Dizimistas: React.FC = () => {
         community: user.community,
         user_id: user.sub,
         tither_id: tither?.id,
-        bank_id: +formData.bank_id
+        bank_id: +formData.bank_id || 1
       });
 
       if (newUser.status === 201) {

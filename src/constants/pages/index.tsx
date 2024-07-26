@@ -16,6 +16,7 @@ import Dashboards from "../../pages/Dashboard";
 import Usuarios from "../../pages/Usuarios/Index";
 import Comunidades from "../../pages/Comunidades";
 import Bancos from "../../pages/Bancos";
+import { PiHandHeartLight } from "react-icons/pi";
 
 export const Pages: IPages[] = [
   {
@@ -30,7 +31,7 @@ export const Pages: IPages[] = [
   },
   {
     id: 2,
-    icon: <HeartOutlined />,
+    icon: <PiHandHeartLight />,
     path: "dizimo",
     title: "Dizimo",
     hasSubMenu: false,
