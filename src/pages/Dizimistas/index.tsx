@@ -196,7 +196,7 @@ const Dizimistas: React.FC = () => {
         .validateFields()
         .then((allValues) => {
           if (bank) {
-            setPixImageSrc(generatePix(bank, allValues.value, allValues.date.$d))
+            setPixImageSrc(generatePix(bank, allValues.value.replace(',', '.'), allValues.date.$d))
           }
         })
     }
@@ -549,7 +549,6 @@ const Dizimistas: React.FC = () => {
           }
           {
             value !== 0  && bank ?
-            <Form.Item>
                   <QRCode
                     type='canvas'
                     value={pixImageSrc || ""}
@@ -557,7 +556,6 @@ const Dizimistas: React.FC = () => {
                     style={{ marginBottom: 16 }}
                     icon="/logo.jpg"
                   />
-                </Form.Item>
                 : <></>
           }
 

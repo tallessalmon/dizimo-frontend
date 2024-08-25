@@ -12,6 +12,7 @@ import { IForm, IProps } from "./interfaces";
 import React, { useEffect, useState } from "react";
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 import { cpf } from "cpf-cnpj-validator";
+import { ICommunity } from "../../pages/Comunidades/interface";
 
 const DetalhesForm = (props: IProps) => {
   const [community, setCommunity] = useState<ICommunity[]>([]);
@@ -75,8 +76,8 @@ const DetalhesForm = (props: IProps) => {
         name="cpf"
         rules={[
           {
-            required: true,
-            message: `Por favor, insira o CPF!`,
+            required: false,
+            // message: `Por favor, insira o CPF!`,
           },
           {
             validator: (_, value) => {
@@ -109,14 +110,15 @@ const DetalhesForm = (props: IProps) => {
         name="gender"
         rules={[
           {
-            required: true,
-            message: `Por favor indique o sexo!`,
+            required: false,
+            // message: `Por favor indique o sexo!`,
           },
         ]}
       >
         <Select style={{ width: 200 }}>
           <Select.Option value="Masculino" children="Masculino" />
           <Select.Option value="Feminino" children="Feminino" />
+          <Select.Option value="-" children="-" />
         </Select>
       </Form.Item>
 

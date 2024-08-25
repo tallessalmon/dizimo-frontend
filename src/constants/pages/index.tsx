@@ -11,12 +11,15 @@ import Home from "../../pages/Home";
 import Dizimistas from "../../pages/Dizimistas";
 import React from "react";
 import { IPages } from "./interfaces";
-import Dizimo from "../../pages/Dizimo";
 import Dashboards from "../../pages/Dashboard";
 import Usuarios from "../../pages/Usuarios/Index";
 import Comunidades from "../../pages/Comunidades";
 import Bancos from "../../pages/Bancos";
 import { PiHandHeartLight } from "react-icons/pi";
+import { LuNewspaper } from "react-icons/lu";
+import Ofertorio from "../../pages/Ofertorio";
+import RelDizimo from "../../pages/Relatórios/dizimo";
+import RelOfertorio from "../../pages/Relatórios/ofertorio";
 
 export const Pages: IPages[] = [
   {
@@ -32,11 +35,11 @@ export const Pages: IPages[] = [
   {
     id: 2,
     icon: <PiHandHeartLight />,
-    path: "dizimo",
-    title: "Dizimo",
+    path: "oferta",
+    title: "Ofertório",
     hasSubMenu: false,
     subMenu: [],
-    page: <Dizimo />,
+    page: <Ofertorio />,
     allow: ["admin", "administrador", "usuario"],
   },
   {
@@ -61,13 +64,44 @@ export const Pages: IPages[] = [
   },
   {
     id: 5,
-    icon: <SettingOutlined />,
+    icon: <LuNewspaper />,
     path: "#",
-    title: "Configurações",
+    title: "Relatórios",
     hasSubMenu: true,
     subMenu: [
       {
         id: 5.1,
+        icon: <></>,
+        path: "relatorio/dizimo",
+        title: "Dizimo",
+        hasSubMenu: false,
+        subMenu: [],
+        page:<RelDizimo />,
+        allow: ["admin", "administrador", "usuario"],
+      },
+      {
+        id: 5.2,
+        icon: <></>,
+        path: "relatorio/ofertorio",
+        title: "Ofertório",
+        hasSubMenu: false,
+        subMenu: [],
+        page:<RelOfertorio />,
+        allow: ["admin", "administrador", "usuario"],
+      },
+    ],
+    page: <></>,
+    allow: ["admin", "administrador", "usuario"],
+  },
+  {
+    id: 6,
+    icon: <SettingOutlined />,
+    path: "##",
+    title: "Configurações",
+    hasSubMenu: true,
+    subMenu: [
+      {
+        id: 6.1,
         icon: <HomeOutlined />,
         path: "comunidades",
         title: "Comunidades",
@@ -77,7 +111,7 @@ export const Pages: IPages[] = [
         allow: ["admin", "administrador"],
       },
       {
-        id: 5.2,
+        id: 6.2,
         icon: <BankOutlined />,
         path: "bancos",
         title: "Bancos",
@@ -87,7 +121,7 @@ export const Pages: IPages[] = [
         allow: ["admin", "administrador"],
       },
       {
-        id: 5.3,
+        id: 6.3,
         icon: <TeamOutlined />,
         path: "usuarios",
         title: "Usuários",
