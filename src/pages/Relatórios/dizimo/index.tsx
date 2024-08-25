@@ -37,7 +37,6 @@ const RelDizimo: React.FC = () => {
     const getData = async (initialDate?, finalDate?) => {
         const fullResult = await api.get(`tithe${initialDate ? '?' + 'initialDate=' + initialDate : ''}${finalDate ? '&' + 'finalDate=' + finalDate : ''}`)
         const result = fullResult.data.map((ofertory) => {
-            console.log(ofertory)
             if (ofertory.community === userInfo.community || userInfo.profile === 'administrador') {
                 return ofertory
             }
