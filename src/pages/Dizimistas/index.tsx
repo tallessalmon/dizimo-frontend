@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   DatePicker,
@@ -8,6 +8,7 @@ import {
   Popconfirm,
   QRCode,
   Select,
+  Space,
   Table,
   Typography,
   message,
@@ -18,7 +19,8 @@ import {
   EditOutlined,
   PlusCircleOutlined,
   SaveOutlined,
-  HeartOutlined
+  HeartOutlined,
+  SearchOutlined
 } from "@ant-design/icons";
 import moment from "moment-timezone";
 import locale from "antd/es/date-picker/locale/pt_BR";
@@ -32,6 +34,9 @@ import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 import { IBanks } from "../Bancos/interface";
 import generatePix from "../../components/QRCodePix";
 import { ColumnType } from "antd/es/table";
+import type { InputRef, TableColumnType } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { FilterDropdownProps } from "antd/es/table/interface";
 
 const Dizimistas: React.FC = () => {
   const [form] = Form.useForm();
@@ -48,8 +53,12 @@ const Dizimistas: React.FC = () => {
   const [bank, setBank] = useState<IBanks>();
   const [alert, contextHolder] = notification.useNotification();
   const [pixImageSrc, setPixImageSrc] = useState<string>("");
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef<InputRef>(null);
 
   type NotificationType = 'success' | 'info' | 'warning' | 'error';
+  type DataIndex = keyof IDizimista;
 
   const showDrawer = (selectedTither: IDizimista) => {
     setTither(selectedTither);
@@ -115,6 +124,78 @@ const Dizimistas: React.FC = () => {
       console.error("Erro ao buscar dados:", error);
     }
   };
+
+
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: FilterDropdownProps['confirm'],
+    dataIndex: DataIndex,
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setSearchText('');
+  };
+
+
+  const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<IDizimista> => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <DatePicker 
+          locale={locale} 
+          format="DD/MM" 
+          onChange={(e: any) => setSelectedKeys(e && e.$d ? [moment(e.$d).format('MM-DD')] : [])} 
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Pesquisar
+          </Button>
+          <Button
+            onClick={() => {clearFilters && handleReset(clearFilters); handleSearch(selectedKeys as string[], confirm, dataIndex)}}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Limpar
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered: boolean) => (
+      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes((value as string).toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
 
   const expandedRowRender = (record: IDizimista) => {
     const columnsTithe: ColumnType<ITithe>[] = [
@@ -355,6 +436,7 @@ const Dizimistas: React.FC = () => {
       dataIndex: "birthday",
       type: Date,
       width: "15%",
+      ...getColumnSearchProps('birthday'),
       editable: true,
       render: (value: string, record: IDizimista) => {
         return moment(record.birthday).format("DD/MM/YYYY");
