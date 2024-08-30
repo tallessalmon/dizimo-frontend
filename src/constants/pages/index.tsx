@@ -30,7 +30,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Home />,
-    allow: ["admin", "administrador", "usuario"],
+    allow: ["administrador", "usuario"],
   },
   {
     id: 2,
@@ -40,7 +40,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Ofertorio />,
-    allow: ["admin", "administrador", "usuario"],
+    allow: ["administrador", "usuario"],
   },
   {
     id: 3,
@@ -50,7 +50,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Dizimistas />,
-    allow: ["admin", "administrador", "usuario"],
+    allow: ["administrador", "usuario"],
   },
   {
     id: 4,
@@ -60,7 +60,7 @@ export const Pages: IPages[] = [
     hasSubMenu: false,
     subMenu: [],
     page: <Dashboards />,
-    allow: ["admin", "administracao"],
+    allow: ["administrador"],
   },
   {
     id: 5,
@@ -77,7 +77,7 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page:<RelDizimo />,
-        allow: ["admin", "administrador", "usuario"],
+        allow: ["administrador", "usuario"],
       },
       {
         id: 5.2,
@@ -87,11 +87,11 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page:<RelOfertorio />,
-        allow: ["admin", "administrador", "usuario"],
+        allow: ["administrador", "usuario"],
       },
     ],
     page: <></>,
-    allow: ["admin", "administrador", "usuario"],
+    allow: ["administrador", "usuario"],
   },
   {
     id: 6,
@@ -108,7 +108,7 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page: <Comunidades />,
-        allow: ["admin", "administrador"],
+        allow: ["administrador"],
       },
       {
         id: 6.2,
@@ -118,7 +118,7 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page:<Bancos />,
-        allow: ["admin", "administrador"],
+        allow: ["administrador"],
       },
       {
         id: 6.3,
@@ -128,10 +128,10 @@ export const Pages: IPages[] = [
         hasSubMenu: false,
         subMenu: [],
         page:<Usuarios />,
-        allow: ["admin", "administrador"],
+        allow: ["administrador"],
       },
     ],
     page: <></>,
-    allow: ["admin", "administrador"],
+    allow: ["administrador"],
   },
 ];

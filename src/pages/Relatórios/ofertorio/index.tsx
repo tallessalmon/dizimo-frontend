@@ -1,17 +1,16 @@
 import { Button, DatePicker, Modal, Form, Table, Typography } from "antd";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import locale from "antd/es/date-picker/locale/pt_BR";
 import api from "../../../services/api";
 import moment from "moment-timezone";
 import { getProfileLocalStorage } from "../../../context/AuthProvider/util";
 import { RangePickerProps } from "antd/es/date-picker";
 import dayjs from "dayjs";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 import { LuRefreshCcw } from "react-icons/lu";
 import type { TableColumnsType } from 'antd';
 import { FaFileExport } from "react-icons/fa";
 import _ from "lodash";
+import { handleExportPdf } from "../../../components/Export";
 
 const relOfertorio: React.FC = () => {
     const [form] = Form.useForm();
@@ -22,7 +21,6 @@ const relOfertorio: React.FC = () => {
 
     const userInfo: any = getProfileLocalStorage();
 
-    const tableRef = useRef();
 
     const onClose = () => {
         setModal(false)
@@ -52,54 +50,12 @@ const relOfertorio: React.FC = () => {
         setFilterCommunity(listCommunity)
     }
 
-    const handleExportPdf = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(18)
-        doc.text("OFERTÓRIO", 14, 22);
-
-        doc.setFontSize(12);
-
-        const tableColumn = columns.map((col) => col.title);
-        const tableRows = data.map((item: any) => [
-          item.community,
-          moment(item.date).format("DD/MM/YYYY"),
-          'R$ ' + item.value,
-        ]);
-
-        const totalSalary = data.reduce(
-            (total, item) => total + item.value,
-            0
-          );
-    
-        doc.autoTable({
-          head: [tableColumn],
-          body: tableRows,
-          foot: [["Total", "","R$ " + totalSalary]],
-          startY: 30,
-          headStyles: {
-            fillColor: [180, 125, 117],
-            textColor: [255, 255, 255], 
-            fontSize: 12,
-          },
-          footStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 0],
-            fontStyle: 'bold', 
-          },
-        });
-    
-        doc.save("ofertorio.pdf");
-      };
-
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         return current && current > dayjs().endOf('day')
     };
 
-    interface DataType {
-        key: React.Key;
-        name: string;
-        age: number;
-        address: string;
+    const exportPDF = () => {
+        handleExportPdf(data, 'ofertorio', columns)
     }
 
     interface IFilter {
@@ -107,7 +63,7 @@ const relOfertorio: React.FC = () => {
         value?: string;
     }
 
-    const columns: TableColumnsType<DataType> = [
+    const columns = [
         {
             title: 'Comunidade',
             dataIndex: 'community',
@@ -204,12 +160,12 @@ const relOfertorio: React.FC = () => {
                 <Button
                     title="Exportar"
                     type="primary"
-                    onClick={handleExportPdf}
+                    onClick={exportPDF}
                 >
                     <FaFileExport /> Exportar
                 </Button>
             </div>
-            <div ref={tableRef}>
+            <div>
                 <Table rowKey={"id"} columns={columns} dataSource={data} scroll={{ x: "100%" }} summary={() => summary} />
             </div>
         </>

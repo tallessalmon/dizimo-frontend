@@ -12,6 +12,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import type { TableColumnsType } from 'antd';
 import { FaFileExport } from "react-icons/fa";
 import _ from "lodash";
+import { handleExportPdf } from "../../../components/Export";
 
 const RelDizimo: React.FC = () => {
     const [form] = Form.useForm();
@@ -44,56 +45,12 @@ const RelDizimo: React.FC = () => {
         setData(result)
     }
 
-    const handleExportPdf = () => {
-        const doc = new jsPDF();
-        doc.setFontSize(18)
-        doc.text("DÍZIMO", 14, 22);
-
-        doc.setFontSize(12);
-
-        const tableColumn = columns.map((col) => col.title);
-        const tableRows = data.map((item: any) => [
-          item.community,
-          moment(item.created_at).format("DD/MM/YYYY"),
-          item.mode_pay.toUpperCase(),
-          item.tither.fullName,
-          'R$ ' + item.value,
-        ]);
-
-        const totalSalary = data.reduce(
-            (total, item) => total + item.value,
-            0
-          );
-    
-        doc.autoTable({
-          head: [tableColumn],
-          body: tableRows,
-          foot: [["Total", "","","","R$ " + totalSalary]],
-          startY: 30,
-          headStyles: {
-            fillColor: [180, 125, 117],
-            textColor: [255, 255, 255], 
-            fontSize: 12,
-          },
-          footStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 0],
-            fontStyle: 'bold', 
-          },
-        });
-    
-        doc.save("dizimo.pdf");
-      };
-
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         return current && current > dayjs().endOf('day')
     };
 
-    interface DataType {
-        key: React.Key;
-        name: string;
-        age: number;
-        address: string;
+    const exportPDF = () => {
+        handleExportPdf(data, 'dizimo', columns)
     }
 
     interface IFilter {
@@ -101,7 +58,7 @@ const RelDizimo: React.FC = () => {
         value?: string;
     }
 
-    const columns: TableColumnsType<DataType> = [
+    const columns = [
         {
             title: 'Comunidade',
             dataIndex: 'community',
@@ -148,7 +105,7 @@ const RelDizimo: React.FC = () => {
         <Table.Summary.Row>
             <Table.Summary.Cell index={0}><Text style={{ fontSize: 20, fontWeight: "bold" }}>TOTAL</Text></Table.Summary.Cell>
             <Table.Summary.Cell index={1} colSpan={2} >
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>R$ {data?.reduce(function (acc, atual) {
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>R$ {data?.reduce(function (acc, atual:any) {
                     return acc + atual.value
                 }, 0)}</Text>
             </Table.Summary.Cell>
@@ -216,7 +173,7 @@ const RelDizimo: React.FC = () => {
                 <Button
                     title="Exportar"
                     type="primary"
-                    onClick={handleExportPdf}
+                    onClick={exportPDF}
                 >
                     <FaFileExport /> Exportar
                 </Button>

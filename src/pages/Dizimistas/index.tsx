@@ -11,7 +11,6 @@ import {
   Space,
   Table,
   Typography,
-  message,
   notification,
 } from "antd";
 import {
@@ -37,6 +36,7 @@ import { ColumnType } from "antd/es/table";
 import type { InputRef, TableColumnType } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { FilterDropdownProps } from "antd/es/table/interface";
+import dayjs from "dayjs";
 
 const Dizimistas: React.FC = () => {
   const [form] = Form.useForm();
@@ -148,6 +148,7 @@ const Dizimistas: React.FC = () => {
         <DatePicker 
           locale={locale} 
           format="DD/MM" 
+          placeholder="DD/MM"
           onChange={(e: any) => setSelectedKeys(e && e.$d ? [moment(e.$d).format('MM-DD')] : [])} 
           style={{ marginBottom: 8, display: 'block' }}
         />
@@ -430,6 +431,14 @@ const Dizimistas: React.FC = () => {
       dataIndex: "gender",
       width: "10%",
       editable: true,
+      filters: [
+        {text: "Feminino", value: 'Feminino'},
+        {text: "Masculino", value: 'Masculino'},
+        {text: "-", value: '-'}
+      ],
+      filterSearch: true,
+      onFilter: (value: string, record: IDizimista) =>
+        record.gender?.startsWith(value),
     },
     {
       title: "Data de Nascimento",
@@ -437,7 +446,7 @@ const Dizimistas: React.FC = () => {
       type: Date,
       width: "15%",
       ...getColumnSearchProps('birthday'),
-      editable: true,
+      editable: false,
       render: (value: string, record: IDizimista) => {
         return moment(record.birthday).format("DD/MM/YYYY");
       },
@@ -574,7 +583,7 @@ const Dizimistas: React.FC = () => {
               { required: true, message: "Favor inserir o mês de referencia" },
             ]}
           >
-            <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="" />
+            <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="MM/YYYY" />
           </Form.Item>
 
           <Form.Item

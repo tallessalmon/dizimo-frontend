@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 import { cpf } from "cpf-cnpj-validator";
 import { ICommunity } from "../../pages/Comunidades/interface";
+import locale from "antd/es/date-picker/locale/pt_BR";
 
 const DetalhesForm = (props: IProps) => {
   const [community, setCommunity] = useState<ICommunity[]>([]);
@@ -27,7 +28,7 @@ const DetalhesForm = (props: IProps) => {
 
   const onFinish = async (data: IForm) => {
     const newUser = await api.post("/tithers", {
-      fullName: data.fullName,
+      fullName: data.fullName.toUpperCase(),
       community: data.community,
       address: data.address,
       number: data.number,
@@ -49,6 +50,8 @@ const DetalhesForm = (props: IProps) => {
         "Ops!! Não consegui cadastrar o usuário, por favor confira as informações"
       );
     }
+
+    props.getData()
   };
   return (
     <Form
@@ -102,7 +105,7 @@ const DetalhesForm = (props: IProps) => {
           },
         ]}
       >
-        <DatePicker format={"DD/MM/YYYY"} />
+        <DatePicker format={"DD/MM/YYYY"} locale={locale} placeholder="DD/MM/AAAA"/>
       </Form.Item>
 
       <Form.Item
