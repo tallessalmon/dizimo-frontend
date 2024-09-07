@@ -69,15 +69,15 @@ const Dizimistas: React.FC = () => {
     setOpen(false);
     form.resetFields();
   };
+  const userInfo: any = getProfileLocalStorage();
 
   const onFinish = async (formData: any) => {
     try {
       formData.value = Number(formData.value.replace(",", "."));
-      const user: any = getProfileLocalStorage();
       const newUser = await api.post("/tithe", {
         ...formData,
-        community: user.community,
-        user_id: user.sub,
+        community: userInfo.community,
+        user_id: userInfo.sub,
         tither_id: tither?.id,
         bank_id: +formData.bank_id || 1
       });
@@ -559,7 +559,7 @@ const Dizimistas: React.FC = () => {
             onChange: cancel,
           }}
           scroll={{ x: "100%" }}
-          expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
+          expandable={ userInfo.profile === 'administrador' ? { expandedRowRender, defaultExpandedRowKeys: ['0'] } : {}}
         />
       </Form>
 

@@ -139,7 +139,7 @@ const RelDizimo: React.FC = () => {
                                     { required: true, message: "Favor inserir as datas de referencia" },
                                 ]}
                             >
-                                <DatePicker.RangePicker disabledDate={disabledDate} locale={locale} format="DD/MM/YYYY" />
+                                <DatePicker.RangePicker disabledDate={disabledDate} locale={locale} format="MM/YYYY" picker="month" />
                             </Form.Item> </> :
                             <Form.Item
                                 label="Data de Referência"
