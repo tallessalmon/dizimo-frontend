@@ -1,26 +1,25 @@
 import jsPDF from "jspdf";
 import moment from "moment-timezone";
 import "jspdf-autotable";
+import { styleText } from "util";
 
 export const handleExportPdf = (data, title, columns) => {
     const doc = new jsPDF();
     doc.setFontSize(18)
     doc.text(`${title.toUpperCase()}`, 14, 22);
 
-    doc.setFontSize(12);
-
-    const tableColumn = columns.map((col) => col.title);
+    const tableColumn = columns.map((col) => col.title.toUpperCase());
     const tableRows = title === 'dizimo' ? data.map((item: any) => [
         item.community,
         moment(item.created_at).format("DD/MM/YYYY"),
         item.mode_pay.toUpperCase(),
         item.tither.fullName,
-        'R$ ' + item.value
+        item.value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
     ]) : data.map((item: any) => [
         item.community,
         moment(item.date).format("DD/MM/YYYY"),
-        'R$ ' + item.value,
-    ]);;
+        item.value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}),
+    ]);
 
     const totalSalary = data.reduce(
         (total, item) => total + item.value,
@@ -30,12 +29,15 @@ export const handleExportPdf = (data, title, columns) => {
     doc.autoTable({
         head: [tableColumn],
         body: tableRows,
-        foot: title === 'dizimo' ? [["Total", "", "", "", "R$ " + totalSalary]] : [["Total", "", "R$ " + totalSalary]],
+        foot: title === 'dizimo' ? [["TOTAL", "", "", "", totalSalary.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})]] : [["Total", "", totalSalary.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})]],
         startY: 30,
         headStyles: {
             fillColor: [180, 125, 117],
             textColor: [255, 255, 255],
-            fontSize: 12,
+            fontSize: 10,
+        },
+        bodyStyles: {
+            fontSize: 7
         },
         footStyles: {
             fillColor: [255, 255, 255],

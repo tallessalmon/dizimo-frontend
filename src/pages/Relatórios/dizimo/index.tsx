@@ -96,7 +96,7 @@ const RelDizimo: React.FC = () => {
             title: 'Valor',
             dataIndex: 'value',
             render: (value: string, record: any) => {
-                return 'R$ ' + record.value;
+                return record.value.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
             },
         },
     ];
@@ -105,9 +105,9 @@ const RelDizimo: React.FC = () => {
         <Table.Summary.Row>
             <Table.Summary.Cell index={0}><Text style={{ fontSize: 20, fontWeight: "bold" }}>TOTAL</Text></Table.Summary.Cell>
             <Table.Summary.Cell index={1} colSpan={2} >
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>R$ {data?.reduce(function (acc, atual:any) {
-                    return acc + atual.value
-                }, 0)}</Text>
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>{data?.reduce(function (acc, atual:any) {
+                    return acc + atual.value;
+                }, 0).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</Text>
             </Table.Summary.Cell>
         </Table.Summary.Row>
     </>

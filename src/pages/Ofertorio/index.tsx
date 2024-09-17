@@ -8,11 +8,18 @@ import moment from "moment-timezone";
 import dayjs from "dayjs";
 import { IBanks } from "../Bancos/interface";
 import { RangePickerProps } from "antd/es/date-picker";
+import { useAuth } from "../../context/AuthProvider/useAuth";
 
 const Ofertorio: React.FC = () => {
   const [payment, setPayment] = useState<String>('')
   const [form] = Form.useForm();
+  const user = getProfileLocalStorage()
 
+  const auth = useAuth()
+  if (user && user.exp && user.exp < Math.floor(Date.now() / 1000)) {
+    auth.logout()
+  }
+  
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
