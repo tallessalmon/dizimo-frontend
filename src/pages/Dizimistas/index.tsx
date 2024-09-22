@@ -151,6 +151,7 @@ const Dizimistas: React.FC = () => {
           placeholder="DD/MM"
           onChange={(e: any) => setSelectedKeys(e && e.$d ? [moment(e.$d).format('MM-DD')] : [])} 
           style={{ marginBottom: 8, display: 'block' }}
+          placement="bottomLeft"
         />
         <Space>
           <Button
@@ -583,7 +584,7 @@ const Dizimistas: React.FC = () => {
               { required: true, message: "Favor inserir o mês de referencia" },
             ]}
           >
-            <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="MM/YYYY" />
+            <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="MM/YYYY" placement="bottomLeft"/>
           </Form.Item>
 
           <Form.Item

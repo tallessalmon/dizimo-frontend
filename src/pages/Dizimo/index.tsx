@@ -112,7 +112,7 @@ const Dizimo: React.FC = () => {
             { required: true, message: "Favor inserir o mês de referencia" },
           ]}
         >
-          <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder=""/>
+          <DatePicker picker="month" locale={locale} format="MM/YYYY" placeholder="" placement="bottomLeft"/>
         </Form.Item>
 
         <Form.Item

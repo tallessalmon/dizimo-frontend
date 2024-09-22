@@ -72,7 +72,7 @@ const Ofertorio: React.FC = () => {
             { required: true, message: "Favor inserir o dia de referencia" },
           ]}
         >
-          <DatePicker disabledDate={disabledDate} locale={locale} format="DD/MM/YYYY" placeholder=""/>
+          <DatePicker disabledDate={disabledDate} locale={locale} format="DD/MM/YYYY" placeholder="" placement="bottomLeft"/>
         </Form.Item>
 
         <Form.Item

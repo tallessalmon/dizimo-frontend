@@ -139,7 +139,7 @@ const RelDizimo: React.FC = () => {
                                     { required: true, message: "Favor inserir as datas de referencia" },
                                 ]}
                             >
-                                <DatePicker.RangePicker disabledDate={disabledDate} locale={locale} format="MM/YYYY" picker="month" />
+                                <DatePicker.RangePicker disabledDate={disabledDate} locale={locale} format="MM/YYYY" picker="month" placement="bottomLeft" />
                             </Form.Item> </> :
                             <Form.Item
                                 label="Data de Referência"
@@ -148,7 +148,7 @@ const RelDizimo: React.FC = () => {
                                     { required: true, message: "Favor inserir a data de referencia" },
                                 ]}
                             >
-                                <DatePicker disabledDate={disabledDate} locale={locale} format="DD/MM/YYYY" placeholder="" />
+                                <DatePicker disabledDate={disabledDate} locale={locale} format="DD/MM/YYYY" placeholder="" placement="bottomLeft" />
                             </Form.Item>
 
                     }
