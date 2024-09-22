@@ -12,7 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.654.0",
     "antd": "^5.12.2",
+    "antd-img-crop": "^4.23.0",
     "apexcharts": "^3.46.0",
     "axios": "^1.6.2",
     "buffer": "^6.0.3",
