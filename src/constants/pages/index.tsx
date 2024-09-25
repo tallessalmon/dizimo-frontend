@@ -21,7 +21,8 @@ import Ofertorio from "../../pages/Ofertorio";
 import RelDizimo from "../../pages/Relatórios/dizimo";
 import RelOfertorio from "../../pages/Relatórios/ofertorio";
 import Informativos from "../../pages/Informativos/Index";
-import { BsMegaphone } from "react-icons/bs";
+import { BsBrush, BsMegaphone } from "react-icons/bs";
+import ThemeCustomization from "../../pages/Custom";
 
 export const Pages: IPages[] = [
   {
@@ -134,6 +135,16 @@ export const Pages: IPages[] = [
       },
       {
         id: 6.4,
+        icon: <BsBrush />,
+        path: "custom",
+        title: "Customizar",
+        hasSubMenu: false,
+        subMenu: [],
+        page:<ThemeCustomization />,
+        allow: ["administrador"],
+      },
+      {
+        id: 6.5,
         icon: <TeamOutlined />,
         path: "usuarios",
         title: "Usuários",

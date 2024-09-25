@@ -1,15 +1,26 @@
-import { Button, Form, Input, message, Row, Col } from "antd";
+import { Button, Form, Input, message, Row, Col, Spin } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useAuth } from "../../context/AuthProvider/useAuth";
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import api from "../../services/api";
 
 export const Login = () => {
+  const [secundary, setSecundary] = useState('#ffffff')
+  const [loading, setLoading] = useState(true)
   const isNotMobile = useMediaQuery({ query: "(min-width: 768px)" });
   const auth = useAuth();
   const history = useNavigate();
   const [form] = Form.useForm();
+
+  useEffect(() => {
+
+    api.get('theme').then(({ data }) => {
+      setSecundary(data[0].secundary)
+      setLoading(false);
+    })
+  }, [])
 
   async function onFinish(values: { username: string; password: string }) {
     try {
@@ -18,6 +29,25 @@ export const Login = () => {
     } catch (error) {
       message.error("Usuario e/ou senha invalidos");
     }
+  }
+
+  // Condicional de carregamento
+  if (loading) {
+
+    return (
+      <>
+        <Row
+          justify="center"
+          align="middle"
+          style={{
+            height: "100vh",
+            backgroundColor: "rgba(230, 230, 230, 0.863)",
+          }}
+        >
+          <Spin tip="Carregando.." size="large" />
+        </Row>
+      </>
+    );
   }
 
   return (
@@ -40,7 +70,7 @@ export const Login = () => {
           borderRadius: "7px",
         }}
       >
-        <div style={{textAlign: 'center', backgroundColor: "#B47D76", borderRadius: 30}}>
+        <div style={{ textAlign: 'center', backgroundColor: secundary, borderRadius: 30 }}>
           <img
             src="/logo.jpg"
             alt="Logo"
@@ -84,7 +114,7 @@ export const Login = () => {
                   !!form.getFieldsError().filter(({ errors }) => errors.length)
                     .length
                 }
-                style={{ paddingInline: "30%", backgroundColor: "#B47D76" }}
+                style={{ paddingInline: "30%", backgroundColor: secundary }}
               >
                 Entrar
               </Button>

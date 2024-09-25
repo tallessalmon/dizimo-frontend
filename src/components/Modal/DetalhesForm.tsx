@@ -105,7 +105,7 @@ const DetalhesForm = (props: IProps) => {
           },
         ]}
       >
-        <DatePicker format={"DD/MM/YYYY"} locale={locale} placeholder="DD/MM/AAAA"/>
+        <DatePicker format={"DD/MM/YYYY"} locale={locale} placeholder="DD/MM/AAAA" placement="bottomLeft"/>
       </Form.Item>
 
       <Form.Item

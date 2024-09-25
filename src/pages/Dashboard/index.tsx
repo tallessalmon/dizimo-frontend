@@ -5,6 +5,7 @@ import { ITithe } from "../Dizimistas/interfaces";
 import moment from "moment-timezone";
 import "moment/locale/pt-br";
 import { Radio } from "antd";
+import chroma from 'chroma-js';
 
 const Dashboards: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
@@ -53,6 +54,15 @@ const Dashboards: React.FC = () => {
     });
   }, [typeDash]);
 
+  function generateColorArray(inputColor) {
+    const colorScale = chroma.scale([inputColor, chroma.random()]).mode('lab').colors(5);
+    return colorScale;
+  }
+
+  const inputColor = api.get('theme').then((e) => {return e});
+
+  const colorArray = generateColorArray(inputColor[0].secundary)
+
   const options = {
     xaxis: {
       categories: categories,
@@ -73,7 +83,7 @@ const Dashboards: React.FC = () => {
       },
       tooltip: { enabled: true },
     },
-    colors: ["#B47D75", "#61C0BF", "#F2C94C", "#277DA1", "#577590"],
+    colors: colorArray,
     plotOptions: {
       bar: {
         borderRadius: 10,

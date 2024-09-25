@@ -1,36 +1,42 @@
 import React, { useEffect, useState } from "react";
-import {
-    LogoutOutlined,
-} from "@ant-design/icons";
+import { LogoutOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { ConfigProvider, Layout, Menu } from "antd";
+import { ConfigProvider, Layout, Menu, Row, Spin } from "antd";
 import './style.css'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthProvider/useAuth';
 import Home from '../../pages/Home';
 import { getProfileLocalStorage } from "../../context/AuthProvider/util";
 import { Pages } from "../pages";
+import api from "../../services/api";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const Navbar: React.FC = () => {
-    const navigate = useNavigate()
-    const auth = useAuth()
+    const navigate = useNavigate();
+    const auth = useAuth();
 
     const [isHovered, setIsHovered] = useState(false);
-    const [page, setPage] = useState<JSX.Element>(<Home />)
-    const userInfo: any = getProfileLocalStorage()
+    const [page, setPage] = useState<JSX.Element>(<Home />);
+    const [primary, setPrimary] = useState('#000000');
+    const [secundary, setSecundary] = useState('#000000');
+    const [siderBg, setSiderBg] = useState('#000000');
+    const [subMenuItemBg, setSubMenuItemBg] = useState('#000000');
+    const [darkItemBg, setDarkItemBg] = useState('#000000');
+    const [darkSubMenuItemBg, setDarkSubMenuItemBg] = useState('#000000');
 
-    const access = String(userInfo?.profile)
+    const [loading, setLoading] = useState(true);
+
+    const userInfo: any = getProfileLocalStorage();
+    const access = String(userInfo?.profile);
 
     const handleMenuClick = (navigator: any) => {
         setPage(navigator.page || <></>);
         navigate('/#' + navigator.path.toLowerCase());
     };
 
-    // eslint-disable-next-line array-callback-return
     const menu: MenuProps['items'] | any = Pages.map((navigator) => {
-        const render = navigator.allow.includes(access)
+        const render = navigator.allow.includes(access);
         if (render) {
             return !navigator.hasSubMenu ? (
                 {
@@ -46,25 +52,21 @@ const Navbar: React.FC = () => {
                     icon: navigator.icon,
                     title: navigator.title,
                     label: navigator.title,
-                    // eslint-disable-next-line array-callback-return
                     children: navigator.subMenu?.map((item) => {
                         if (item.allow.includes(access)) {
-                            return (
-                                {
-                                    key: item.path,
-                                    label: item.title,
-                                    title: item.title,
-                                    icon: item.icon,
-                                    onClick: () => handleMenuClick(item)
-                                }
-                            )
+                            return {
+                                key: item.path,
+                                label: item.title,
+                                title: item.title,
+                                icon: item.icon,
+                                onClick: () => handleMenuClick(item)
+                            };
                         }
                     }),
                 }
-            )
+            );
         }
-
-    })
+    });
 
     menu.push({
         key: 99,
@@ -84,35 +86,59 @@ const Navbar: React.FC = () => {
         onClick: () => auth.logout(),
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => setIsHovered(false)
-    })
+    });
 
     useEffect(() => {
-        const path = window.location.hash.substring(1)
-        // eslint-disable-next-line array-callback-return
+        api.get('theme').then(({ data }: any) => {
+            setPrimary(data[0].primary);
+            setSecundary(data[0].secundary);
+            setSiderBg(data[0].siderBg);
+            setSubMenuItemBg(data[0].subMenuItemBg);
+            setDarkItemBg(data[0].darkItemBg);
+            setDarkSubMenuItemBg(data[0].darkSubMenuItemBg);
+
+            setLoading(false);
+        });
+
+        const path = window.location.hash.substring(1);
         menu.map((o: any) => {
             if (o && !o.children && o.key === path) {
-                o.onClick()
+                o.onClick();
             }
             if (o && o.children) {
-                // eslint-disable-next-line array-callback-return
                 o.children.map((c: any) => {
                     if (c && c.key === path) {
-                        c.onClick()
+                        c.onClick();
                     }
-                })
+                });
             }
-        })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        });
     }, []);
+
+    if (loading) {
+        return (
+            <>
+                <Row
+                    justify="center"
+                    align="middle"
+                    style={{
+                        height: "100vh",
+                        backgroundColor: "rgba(230, 230, 230, 0.863)",
+                    }}
+                >
+                    <Spin tip="Carregando.." size="large" />
+                </Row>
+            </>
+        )
+    }
 
     return (
         <ConfigProvider
             theme={{
-                token: { colorPrimary: "#E7C88F" },
-                // token: {colorPrimary: "#B47D75"},
+                token: { colorPrimary: primary },
                 components: {
-                    Layout: { siderBg: "#4A4947" },
-                    Menu: { subMenuItemBg: "#7d774d", darkItemBg: "#4A4947", darkSubMenuItemBg: "#302f2e" },
+                    Layout: { siderBg: siderBg },
+                    Menu: { subMenuItemBg: subMenuItemBg, darkItemBg: darkItemBg, darkSubMenuItemBg: darkSubMenuItemBg },
                 },
             }}
         >
@@ -123,7 +149,7 @@ const Navbar: React.FC = () => {
                     collapsedWidth="0"
                     style={{ minHeight: "100vh", botton: 0 }}
                 >
-                    <div className="logo">
+                    <div className="logo" style={{ background: secundary }}>
                         <img src="/logo.jpg" alt="Logo" height={"50px"} />
                     </div>
                     <Menu

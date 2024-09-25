@@ -230,9 +230,6 @@ const Informativos: React.FC = () => {
         <Button
           title="Adicionar"
           type="primary"
-          style={{
-            backgroundColor: "#357e35"
-          }}
           onClick={() => setOpenNewInfo(true)}
         >
           <PlusCircleOutlined />
