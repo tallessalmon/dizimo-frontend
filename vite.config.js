@@ -4,7 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const manifestForPlugin = {
   registerType: 'prompt',
-  includeAssests: ["favicon.ico", "apple-touc-icon.png", "masked-icon.svg"],
+  includeAssests: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
   manifest: {
     name: "PSRL",
     short_name: "PSRL",
@@ -45,5 +45,13 @@ const manifestForPlugin = {
 };
 
 export default defineConfig({
-  plugins: [react(), VitePWA(manifestForPlugin)],
+  plugins: [
+    react(),
+    VitePWA({
+      ...manifestForPlugin,
+      workbox: {
+        maximumFileSizeToCacheInBytes: 4000000, // 4 MB
+      }
+    }),
+  ],
 });
