@@ -5,12 +5,13 @@ import { ITithe } from "../Dizimistas/interfaces";
 import moment from "moment-timezone";
 import "moment/locale/pt-br";
 import { Radio } from "antd";
-import chroma from 'chroma-js';
+import chroma from "chroma-js";
 
 const Dashboards: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [seriesData, setSeriesData] = useState<any[]>([]);
   const [typeDash, setTypeDash] = useState<"month" | "community">("month");
+  const [colorArray, setColorArray] = useState<string[]>([]); // Estado para armazenar as cores
 
   useEffect(() => {
     api.get<ITithe[]>("/tithe").then((result) => {
@@ -24,13 +25,17 @@ const Dashboards: React.FC = () => {
         }, {} as Record<string, number>);
 
         const newCategories = Object.keys(groupedData);
-        const newData = Object.values(groupedData).map(v => parseFloat(v.toFixed(2)));
+        const newData = Object.values(groupedData).map((v) =>
+          parseFloat(v.toFixed(2))
+        );
 
         setCategories(newCategories);
-        setSeriesData([{
-          name: "Total do Mês",
-          data: newData
-        }]);
+        setSeriesData([
+          {
+            name: "Total do Mês",
+            data: newData,
+          },
+        ]);
       } else {
         const groupedData = data.reduce((acc, e) => {
           const month = moment(e.date).locale("pt-br").format("MM/YYYY");
@@ -41,12 +46,14 @@ const Dashboards: React.FC = () => {
           return acc;
         }, {} as Record<string, Record<string, number>>);
 
-        const allMonths = [...new Set(data.map(e => moment(e.date).locale("pt-br").format("MM/YYYY")))];
+        const allMonths = [
+          ...new Set(data.map((e) => moment(e.date).locale("pt-br").format("MM/YYYY"))),
+        ];
         setCategories(allMonths);
 
-        const newSeries = Object.keys(groupedData).map(community => ({
+        const newSeries = Object.keys(groupedData).map((community) => ({
           name: community,
-          data: allMonths.map(month => groupedData[community][month] || 0)
+          data: allMonths.map((month) => groupedData[community][month] || 0),
         }));
 
         setSeriesData(newSeries);
@@ -54,14 +61,20 @@ const Dashboards: React.FC = () => {
     });
   }, [typeDash]);
 
-  function generateColorArray(inputColor) {
-    const colorScale = chroma.scale([inputColor, chroma.random()]).mode('lab').colors(5);
-    return colorScale;
-  }
+  useEffect(() => {
+    // Função para gerar o array de cores
+    function generateColorArray(inputColor: string) {
+      const colorScale = chroma.scale([inputColor, chroma.random()]).mode("lab").colors(5);
+      return colorScale;
+    }
 
-  const inputColor = api.get('theme').then((e) => {return e});
-
-  const colorArray = generateColorArray(inputColor[0].secundary)
+    // Obtém a cor do tema da API
+    api.get("/theme").then((response) => {
+      const inputColor = response.data[0].secundary; // Obtemos a cor secundária da API
+      const generatedColors = generateColorArray(inputColor); // Geramos as cores com base na cor secundária
+      setColorArray(generatedColors); // Atualizamos o estado com o array de cores
+    });
+  }, []); // O array vazio garante que esse useEffect rode apenas uma vez
 
   const options = {
     xaxis: {
@@ -83,7 +96,7 @@ const Dashboards: React.FC = () => {
       },
       tooltip: { enabled: true },
     },
-    colors: colorArray,
+    colors: colorArray, // Usamos o array de cores gerado
     plotOptions: {
       bar: {
         borderRadius: 10,
@@ -105,7 +118,7 @@ const Dashboards: React.FC = () => {
 
   return (
     <>
-      <h2>Dashboards</h2>
+      <h2>DASHBOARDS</h2>
       <div style={{ display: "flex", justifyContent: "end", paddingBottom: 30 }}>
         <Radio.Group defaultValue={typeDash} onChange={(e) => setTypeDash(e.target.value)}>
           <Radio value="month">Mês</Radio>
